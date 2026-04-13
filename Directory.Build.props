@@ -61,6 +61,7 @@
        │ Directories                                                          │
        ╰──────────────────────────────────────────────────────────────────────╯ -->
   <PropertyGroup>
+    <PathToProject>$(MSBuildThisFileDirectory)src/</PathToProject>
     <PathToLocalProjects>$(MSBuildThisFileDirectory)deps/</PathToLocalProjects>
   </PropertyGroup>
 
