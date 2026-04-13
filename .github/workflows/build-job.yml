@@ -27,10 +27,10 @@ jobs:
         dotnet-version: ${{ inputs.dotnet-version }}
 
     - name: 🔄 Restore
-      run: dotnet restore /p:UseLocalProjects=${{ inputs.use-local-projects }}
+      run: dotnet restore -p:UseLocalProjects=${{ inputs.use-local-projects }}
 
     - name: 🏗️ Build
-      run: dotnet build --configuration Release --no-restore /p:UseLocalProjects=${{ inputs.use-local-projects }}
+      run: dotnet build --configuration Release --no-restore -p:UseLocalProjects=${{ inputs.use-local-projects }}
 
     - name: 📦 Pack
       run: dotnet pack --configuration Release --no-build -o .
