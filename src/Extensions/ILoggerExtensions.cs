@@ -1,0 +1,32 @@
+using System;
+using Spectre.Console.Rendering;
+
+namespace WB.Logging.LogSinks.Console.Spectre;
+
+/// <summary>
+/// Provides extension methods for the <see cref="ILogger"/> interface.
+/// </summary>
+public static class ILoggerExtensions
+{
+    // ┌─────────────────────────────────────────────────────────────────────────────┐
+    // │ Public Methods                                                              │
+    // └─────────────────────────────────────────────────────────────────────────────┘
+
+    /// <summary>
+    /// Logs the <paramref name="widget"/> as a log message. This method allows you to log any 
+    /// Spectre.Console widget directly by passing it as an argument.
+    /// </summary>
+    /// <remarks>The <paramref name="widget"/> is logged with a <c>null</c> <see cref="LogLevel"/>.</remarks>
+    /// <param name="this">The <see cref="ILogger"/> instance to log the widget to.</param>
+    /// <param name="widget">The Spectre.Console widget to log.</param>
+    /// <returns>The same <see cref="ILogger"/> instance to allow for method chaining.</returns>
+    /// <seealso cref="IRenderable"/>
+    public static ILogger Widget(this ILogger @this, IRenderable widget)
+    {
+        ArgumentNullException.ThrowIfNull(@this);
+
+        @this.Log(null, new WidgetPayload(widget));
+    
+        return @this;
+    }
+}
