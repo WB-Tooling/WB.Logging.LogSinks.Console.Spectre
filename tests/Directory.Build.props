@@ -13,8 +13,7 @@
        │ Project Under Tests                                                  │
        ╰──────────────────────────────────────────────────────────────────────╯ -->
   <ItemGroup>
-    <ProjectReference
-      Include="$(MSBuildThisFileDirectory)../src/WB.Logging.LogSinks.Console.Spectre.csproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../src/WB.Logging.LogSinks.Console.Spectre.csproj" />
   </ItemGroup>
 
   <!-- ╭──────────────────────────────────────────────────────────────────────╮
