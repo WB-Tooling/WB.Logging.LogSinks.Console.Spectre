@@ -72,7 +72,7 @@
   <!-- ╭──────────────────────────────────────────────────────────────────────╮
        │ Package References                                                   │
        ╰──────────────────────────────────────────────────────────────────────╯ -->
-  <ItemGroup Condition="'$(UseLocalProjects)' == ''">
+  <ItemGroup Condition="'$(UseLocalProjects)' != 'true'">
     <PackageReference Include="WB.Logging.Base" />
     <PackageReference Include="WB.Logging.LogSinks.Base" />
   </ItemGroup>
@@ -80,7 +80,7 @@
   <!-- ╭──────────────────────────────────────────────────────────────────────╮
        │ Project References                                                   │
        ╰──────────────────────────────────────────────────────────────────────╯ -->
-  <ItemGroup Condition="'$(UseLocalProjects)' != ''">
+  <ItemGroup Condition="'$(UseLocalProjects)' == 'true'">
     <ProjectReference Include="$(PathToLocalProjects)WB.Logging.Base/src/WB.Logging.Base.csproj" />
     <ProjectReference Include="$(PathToLocalProjects)WB.Logging.LogSinks.Base/src/WB.Logging.LogSinks.Base.csproj" />
   </ItemGroup>
