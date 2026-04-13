@@ -1,5 +1,9 @@
 {
     "cSpell.words": [
         "renderables"
+    ],
+    "recommendedExtensions": [
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.csdevkit"
     ]
 }
