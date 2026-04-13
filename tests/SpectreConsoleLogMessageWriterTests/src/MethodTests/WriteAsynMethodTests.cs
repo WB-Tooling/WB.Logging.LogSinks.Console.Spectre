@@ -10,7 +10,11 @@ namespace SpectreConsoleLogMessageWriterTests.MethodTests.WriteAsynMethodTests;
 public sealed class TheWriteAsyncMethod
 {
     [Test]
-    public Task ShouldWriteLogMessageWithAllParts()
+    [Arguments(null)]
+    [Arguments(LogLevel.Info)]
+    [Arguments(LogLevel.Warning)]
+    [Arguments(LogLevel.Error)]
+    public Task ShouldWriteLogMessageWithDifferentLogLevels(LogLevel? logLevel)
     {
         // Arrange
         SpectreConsoleLogMessageWriter<object> logMessageWriter = new();
@@ -23,9 +27,56 @@ public sealed class TheWriteAsyncMethod
         logMessageWriter.AnsiConsole = testConsole;
         logMessageWriter.WriteAsync(
             timestamp: new DateTimeOffset(2024, 6, 1, 12, 0, 0, TimeSpan.Zero),
-            logLevel: LogLevel.Warning,
-            senders: ["Sender1", "Sender2"],
-            payload: "0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789");
+            logLevel: logLevel,
+            senders: ["Sender"],
+            payload: "Payload");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
 
         // Assert
         return Verifier.Verify(testConsole.Output);
