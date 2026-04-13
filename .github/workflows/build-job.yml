@@ -50,7 +50,7 @@ jobs:
         dotnet-version: ${{ inputs.dotnet-version }}
 
     - name: 🔄 Restore
-      run: dotnet restore
+      run: dotnet restore /p:UseLocalProjects=true
 
     - name: 🏗️ Build
       run: dotnet build --configuration Release --no-restore /p:UseLocalProjects=true
