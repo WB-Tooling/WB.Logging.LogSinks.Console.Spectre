@@ -81,10 +81,8 @@
        │ Project References                                                   │
        ╰──────────────────────────────────────────────────────────────────────╯ -->
   <ItemGroup Condition="'$(UseLocalProjects)' != ''">
-    <ProjectReference
-      Include="$(PathToLocalProjects)WB.Logging.Base/src/WB.Logging.Base.csproj" />
-    <ProjectReference
-      Include="$(PathToLocalProjects)WB.Logging.LogSinks.Base/src/WB.Logging.LogSinks.Base.csproj" />
+    <ProjectReference Include="$(PathToLocalProjects)WB.Logging.Base/src/WB.Logging.Base.csproj" />
+    <ProjectReference Include="$(PathToLocalProjects)WB.Logging.LogSinks.Base/src/WB.Logging.LogSinks.Base.csproj" />
   </ItemGroup>
 
   <!-- ╭──────────────────────────────────────────────────────────────────────╮
