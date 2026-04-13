@@ -3,7 +3,7 @@
        │ Central Package Management                                           │
        ╰──────────────────────────────────────────────────────────────────────╯ -->
   <PropertyGroup>
-      <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
 
   <!-- ╭──────────────────────────────────────────────────────────────────────╮
