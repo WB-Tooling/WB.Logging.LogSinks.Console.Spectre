@@ -10,11 +10,13 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// <param name="WarningTextStyle"></param>
 /// <param name="ErrorTextStyle"></param>
 /// <param name="UnknownTextStyle"></param>
+/// <param name="NoneTextStyle"></param>
 /// <param name="BracketStyle"></param>
 public readonly record struct LogLevelStylePalette(
     Style InfoTextStyle,
     Style WarningTextStyle,
     Style ErrorTextStyle,
+    Style NoneTextStyle,
     Style UnknownTextStyle,
     Style BracketStyle)
 {
@@ -29,6 +31,7 @@ public readonly record struct LogLevelStylePalette(
         InfoTextStyle: new Style(foreground: Color.Green),
         WarningTextStyle: new Style(foreground: Color.Yellow),
         ErrorTextStyle: new Style(foreground: Color.Red),
+        NoneTextStyle: new Style(foreground: Color.White, background: Color.Grey),
         UnknownTextStyle: new Style(foreground: Color.Magenta),
         BracketStyle: new Style(foreground: Color.White));
 }

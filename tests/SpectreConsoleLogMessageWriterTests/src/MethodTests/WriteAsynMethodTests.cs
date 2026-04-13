@@ -14,7 +14,7 @@ public sealed class TheWriteAsyncMethod
     [Arguments(LogLevel.Info)]
     [Arguments(LogLevel.Warning)]
     [Arguments(LogLevel.Error)]
-    public Task ShouldWriteLogMessageWithDifferentLogLevels(LogLevel? logLevel)
+    public Task ShouldWriteLogMessagesWithDifferentLogLevels(LogLevel? logLevel)
     {
         // Arrange
         SpectreConsoleLogMessageWriter<object> logMessageWriter = new();
@@ -29,54 +29,31 @@ public sealed class TheWriteAsyncMethod
             timestamp: new DateTimeOffset(2024, 6, 1, 12, 0, 0, TimeSpan.Zero),
             logLevel: logLevel,
             senders: ["Sender"],
+                payload: "Payload");
+
+        // Assert
+        return Verifier.Verify(testConsole.Output);
+    }
+    [Test]
+    [Arguments([])]
+    [Arguments(["Sender1"])]
+    [Arguments(["Sender1", "Sender2"])]
+    public Task ShouldWriteLogMessagesWithDifferentSenders(string[] senders)
+    {
+        // Arrange
+        SpectreConsoleLogMessageWriter<object> logMessageWriter = new();
+
+        // Act
+        TestConsole testConsole = new()
+        {
+            EmitAnsiSequences = true
+        };
+        logMessageWriter.AnsiConsole = testConsole;
+        logMessageWriter.WriteAsync(
+            timestamp: new DateTimeOffset(2024, 6, 1, 12, 0, 0, TimeSpan.Zero),
+            logLevel: null,
+            senders: senders,
             payload: "Payload");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
 
         // Assert
         return Verifier.Verify(testConsole.Output);

@@ -21,11 +21,13 @@ public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<TVa
     // └─────────────────────────────────────────────────────────────────────────────┘
     private readonly BadgeWidget infoBadge;
 
-    private readonly BadgeWidget warningBadge = new("WARN");
+    private readonly BadgeWidget warningBadge;
 
-    private readonly BadgeWidget errorBadge = new("ERRO");
+    private readonly BadgeWidget errorBadge;
 
-    private readonly BadgeWidget unknownBadge = new("UNKN");
+    private readonly BadgeWidget noneBadge;
+
+    private readonly BadgeWidget unknownBadge;
 
     private readonly LogMessageWidget logMessageWidget = new();
 
@@ -57,6 +59,18 @@ public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<TVa
         {
             BracketStyle = StylePalette.LogLevelStyle.BracketStyle,
             TextStyle = StylePalette.LogLevelStyle.ErrorTextStyle,
+        };
+
+        noneBadge = new BadgeWidget("NONE")
+        {
+            BracketStyle = StylePalette.LogLevelStyle.BracketStyle,
+            TextStyle = StylePalette.LogLevelStyle.NoneTextStyle,
+        };
+
+        unknownBadge = new BadgeWidget("UNKN")
+        {
+            BracketStyle = StylePalette.LogLevelStyle.BracketStyle,
+            TextStyle = StylePalette.LogLevelStyle.UnknownTextStyle,
         };
     }
 
@@ -138,16 +152,12 @@ public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<TVa
     /// <seealso cref="LogLevel"/>
     protected virtual IEnumerable<IRenderable> RenderLogLevel(LogLevel? logLevel)
     {
-        if (logLevel is null)
-        {
-            yield break;
-        }
-
         yield return logLevel switch
         {
             LogLevel.Info => infoBadge,
             LogLevel.Warning => warningBadge,
             LogLevel.Error => errorBadge,
+            null => noneBadge,
             _ => unknownBadge
         };
     }
