@@ -34,9 +34,11 @@ jobs:
 
     - name: 📦 Pack
       run: dotnet pack --configuration Release --no-build -o .
+      if: ${{ inputs.use-local-projects == 'false' }}
 
     - name: ⬆️ Upload package artifact
       uses: actions/upload-artifact@v4
+      if: ${{ inputs.use-local-projects == 'false' }}
       with:
         name: nuget-package
         path: "*.nupkg"
