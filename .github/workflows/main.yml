@@ -22,6 +22,14 @@ jobs:
     uses: ./.github/workflows/build-job.yml
     with:
       dotnet-version: '10.0.x'
+      use-local-projects: false
+
+  build:
+    name: 🏗️ Build Against Sources
+    uses: ./.github/workflows/build-job.yml
+    with:
+      dotnet-version: '10.0.x'
+      use-local-projects: true
   
   publish-nuget:
     name: 📦 Publish Nuget Package
