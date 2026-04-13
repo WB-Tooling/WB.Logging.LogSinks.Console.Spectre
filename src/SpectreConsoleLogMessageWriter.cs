@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Spectre.Console;
 using Spectre.Console.Rendering;
@@ -172,13 +173,15 @@ public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<TVa
     {
         ArgumentNullException.ThrowIfNull(senders);
 
-        foreach (var sender in senders)
+        IEnumerable<IRenderable> senderBadges = senders.Select(sender => new BadgeWidget(sender)
         {
-            yield return new BadgeWidget(sender)
-            {
-                TextStyle = StylePalette.SendersStyle
-            };
-        }
+            TextStyle = StylePalette.SendersStyle
+        });
+
+        yield return new Columns(senderBadges)
+        {
+            Expand = false,
+        };
     }
 
     /// <summary>

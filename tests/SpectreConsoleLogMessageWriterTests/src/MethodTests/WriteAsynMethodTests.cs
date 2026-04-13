@@ -35,10 +35,10 @@ public sealed class TheWriteAsyncMethod
         return Verifier.Verify(testConsole.Output);
     }
     [Test]
-    [Arguments([])]
-    [Arguments(["Sender1"])]
-    [Arguments(["Sender1", "Sender2"])]
-    public Task ShouldWriteLogMessagesWithDifferentSenders(string[] senders)
+    [Arguments()]
+    [Arguments("Sender1")]
+    [Arguments("Sender1", "Sender2")]
+    public Task ShouldWriteLogMessagesWithDifferentSenders(params string[] senders)
     {
         // Arrange
         SpectreConsoleLogMessageWriter<object> logMessageWriter = new();
@@ -56,6 +56,6 @@ public sealed class TheWriteAsyncMethod
             payload: "Payload");
 
         // Assert
-        return Verifier.Verify(testConsole.Output);
+        return Verifier.Verify(testConsole.Output).UseParameters(senders);
     }
 }
