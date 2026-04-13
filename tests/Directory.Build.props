@@ -22,14 +22,11 @@
        ╰──────────────────────────────────────────────────────────────────────╯ -->
   <ItemGroup>
     <PackageReference Include="AwesomeAssertions" />
-    <PackageReference
-      Include="AwesomeAssertions.Analyzers" />
+    <PackageReference Include="AwesomeAssertions.Analyzers" />
     <PackageReference Include="FakeItEasy" />
-    <PackageReference
-      Include="Spectre.Console.Testing" />
-      <PackageReference Include="TUnit" />
-    <PackageReference
-      Include="Verify" />
+    <PackageReference Include="Spectre.Console.Testing" />
+    <PackageReference Include="TUnit" />
+    <PackageReference Include="Verify" />
     <PackageReference Include="Verify.TUnit" />
   </ItemGroup>
 
