@@ -1,0 +1,46 @@
+<Project>
+
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" Condition="'' != $([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Test Executable                                                      │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Project Under Tests                                                  │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <ItemGroup>
+    <ProjectReference
+      Include="$(MSBuildThisFileDirectory)../src/WB.Logging.LogSinks.Console.Spectre.csproj" />
+  </ItemGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Testing Packages                                                     │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <ItemGroup>
+    <PackageReference Include="AwesomeAssertions" />
+    <PackageReference
+      Include="AwesomeAssertions.Analyzers" />
+    <PackageReference Include="FakeItEasy" />
+    <PackageReference
+      Include="Spectre.Console.Testing" />
+      <PackageReference Include="TUnit" />
+    <PackageReference
+      Include="Verify" />
+    <PackageReference Include="Verify.TUnit" />
+  </ItemGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Analyzers                                                            │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <ItemGroup>
+    <PackageReference Include="FakeItEasy.Analyzer.CSharp">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

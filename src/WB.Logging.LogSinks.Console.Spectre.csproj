@@ -1,0 +1,98 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Documentation                                                        │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Analyzer Settings                                                    │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <PropertyGroup>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WB.CodeAnalyzer">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Source Link.                                                         │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <EnableSourceLink>true</EnableSourceLink>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <EnableSourceLink>false</EnableSourceLink>
+    <PublishRepositoryUrl>false</PublishRepositoryUrl>
+    <EmbedUntrackedSources>false</EmbedUntrackedSources>
+  </PropertyGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+	     │ Deterministic Builds                                                 │
+	     ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <Deterministic>false</Deterministic>
+    <ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Debug Settings                                                       │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <PropertyGroup>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Documentation                                                        │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Package References                                                   │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <ItemGroup Condition="'$(LocalProjectsDir)' == ''">
+    <PackageReference Include="WB.Logging.Base" />
+    <PackageReference Include="WB.Logging.LogSinks.Base" />
+  </ItemGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Project References                                                   │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <ItemGroup Condition="'$(LocalProjectsDir)' != ''">
+    <ProjectReference
+      Include="$(LocalProjectsDir)WB.Logging.Base/src/WB.Logging.Base.csproj" />
+    <ProjectReference
+      Include="$(LocalProjectsDir)WB.Logging.LogSinks.Base/src/WB.Logging.LogSinks.Base.csproj" />
+  </ItemGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ 3rd-Party References                                                 │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console" />
+    <PackageReference Include="Spectre.Console.Json" />
+  </ItemGroup>
+
+</Project>

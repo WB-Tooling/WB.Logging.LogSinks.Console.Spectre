@@ -1,0 +1,60 @@
+<Project>
+
+  <Import
+    Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))"
+    Condition="'' != $([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Target Framework                                                     │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Package Info.                                                        │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <PropertyGroup>
+    <Authors>Wolf Bublitz</Authors>
+    <Description>A console log sink using Spectre.Console.</Description>
+    <PackageTags>WB.Logging, LogSinks, Console</PackageTags>
+    <PackageProjectUrl>https://github.com/WolfBublitz/WB.Logging.LogSinks.Console.Spectre</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/WolfBublitz/WB.Logging.LogSinks.Console.Spectre</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+         │ Version                                                              │
+         ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <PropertyGroup>
+    <Version>1.0.0-preview.1</Version>
+  </PropertyGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+         │ Nullability Settings                                                 │
+         ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ README                                                               │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <PropertyGroup>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ LICENSE                                                              │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)LICENSE.txt" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+</Project>

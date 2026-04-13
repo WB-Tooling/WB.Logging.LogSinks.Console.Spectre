@@ -1,0 +1,27 @@
+<Solution>
+  <Folder Name="/deps/" />
+  <Folder Name="/deps/WB.Logging.Base/" />
+  <Folder Name="/deps/WB.Logging.Base/src/">
+    <Project Path="deps/WB.Logging.Base/src/WB.Logging.Base.csproj" />
+  </Folder>
+  <Folder Name="/deps/WB.Logging.LogSinks.Base/" />
+  <Folder Name="/deps/WB.Logging.LogSinks.Base/src/">
+    <Project Path="deps/WB.Logging.LogSinks.Base/src/WB.Logging.LogSinks.Base.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/WB.Logging.LogSinks.Console.Spectre.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/ExtensionsTests/" />
+  <Folder Name="/tests/ExtensionsTests/src/">
+    <Project Path="tests/ExtensionsTests/src/ExtensionsTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/SpectreConsoleLogMessageWriterTests/" />
+  <Folder Name="/tests/SpectreConsoleLogMessageWriterTests/src/">
+    <Project Path="tests/SpectreConsoleLogMessageWriterTests/src/SpectreConsoleLogMessageWriterTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/WidgetTests/" />
+  <Folder Name="/tests/WidgetTests/src/">
+    <Project Path="tests/WidgetTests/src/WidgetTests.csproj" />
+  </Folder>
+</Solution>

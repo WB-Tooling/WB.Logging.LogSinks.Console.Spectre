@@ -1,0 +1,42 @@
+<Project>
+     <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Central Package Management                                           │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+     <PropertyGroup>
+          <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+     </PropertyGroup>
+
+     <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ WB Packages                                                          │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+     <ItemGroup>
+          <PackageVersion Include="WB.Logging.Base" Version="[1.0.0-preview.6, 2)" />
+          <PackageVersion Include="WB.Logging.LogSinks.Base" Version="[1.0.0-preview.1, 2)" />
+     </ItemGroup>
+
+     <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ 3rd-Party Packages                                                   │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+     <ItemGroup>
+          <PackageVersion Include="Spectre.Console" Version="[0.55.0, 1)" />
+          <PackageVersion Include="Spectre.Console.Analyzer" Version="[1, 2)" />
+          <PackageVersion Include="Spectre.Console.Json" Version="[0.55.0, 1)" />
+     </ItemGroup>
+
+     <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Test Packages                                                        │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+     <ItemGroup>
+          <PackageVersion Include="WB.CodeAnalyzer" Version="1.0.0" />
+          <PackageVersion Include="AwesomeAssertions" Version="9.3.0" />
+          <PackageVersion Include="AwesomeAssertions.Analyzers" Version="9.0.8" />
+          <PackageVersion Include="FakeItEasy" Version="9.0.1" />
+          <PackageVersion Include="FakeItEasy.Analyzer.CSharp" Version="6.1.1" />
+          <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.103" />
+          <PackageVersion Include="Microsoft.Testing.Platform" Version="2.0.2" />
+          <PackageVersion Include="Spectre.Console.Testing" Version="[0.55.0, 1)" />
+          <PackageVersion Include="TUnit" Version="1.13.54" />
+          <PackageVersion Include="Verify" Version="31.12.5" />
+          <PackageVersion Include="Verify.TUnit" Version="31.12.5" />
+     </ItemGroup>
+</Project>
