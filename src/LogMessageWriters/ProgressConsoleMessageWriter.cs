@@ -10,6 +10,10 @@ internal sealed class ProgressConsoleMessageWriter : IAsyncLogMessageWriter<Prog
 {
     public IAnsiConsole Writer { get; set; } = AnsiConsole.Console;
 
+    public IAsyncLogSink? LogSink { get; set; }
+
+     /// <summary>
+
     public async ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, ProgressPayload? payload)
     {
         if (payload is null)
