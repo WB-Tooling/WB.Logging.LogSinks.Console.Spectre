@@ -1,4 +1,5 @@
 using System;
+using Spectre.Console;
 using Spectre.Console.Rendering;
 
 namespace WB.Logging.LogSinks.Console.Spectre;
@@ -45,7 +46,29 @@ public static class ILoggerExtensions
         ArgumentNullException.ThrowIfNull(@this);
 
         @this.Log(null, new WidgetPayload(widget));
+
+        return @this;
+    }
     
+    /// <summary>
+    /// Logs a horizontal rule to the console.
+    /// </summary>
+    /// <param name="this">The <see cref="ILogger"/> instance to log the horizontal rule to.</param>
+    /// <param name="title">An optional title to display in the center of the horizontal rule.</param>
+    /// <returns>The same <see cref="ILogger"/> instance to allow for method chaining.</returns>
+    public static ILogger HorizontalRule(this ILogger @this, string? title = null)
+    {
+        ArgumentNullException.ThrowIfNull(@this);
+
+        if (title is null)
+        {
+            return @this.Widget(new Rule());
+        }
+        else
+        {
+            @this.Widget(new Rule(title));
+        }
+
         return @this;
     }
 }
