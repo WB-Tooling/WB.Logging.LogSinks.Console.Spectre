@@ -27,12 +27,12 @@ jobs:
           echo "create-nuget-package = ${{ inputs.create-nuget-package }}"
 
       - name: 🗃️ Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: recursive
 
       - name: 🔧 Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ inputs.dotnet-version }}
 
@@ -50,7 +50,7 @@ jobs:
         if: ${{ inputs.create-nuget-package }}
 
       - name: ⬆️ Upload package artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: ${{ inputs.create-nuget-package }}
         with:
           name: nuget-package
