@@ -130,6 +130,9 @@ public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<TVa
     /// </summary>
     public bool ShowPayload { get; set; } = true;
 
+    /// <inheritdoc/>
+    public IAsyncLogSink? LogSink { get; set; }
+
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Protected Methods                                                           │
     // └─────────────────────────────────────────────────────────────────────────────┘
