@@ -18,10 +18,9 @@ public static class ILoggerExtensions
     /// <param name="this">The <see cref="ILogger"/> instance to attach the log sink to.</param>
     /// <param name="configure">An optional action to configure the <see cref="SpectreConsoleLogSink"/> after it has been created and attached.</param>
     /// <returns>An <see cref="IDisposable"/> that can be used to detach the log sink from the logger when it is no longer needed.</returns>
-    public static IDisposable AttachSpectreConsole(this ILogger @this, Action<SpectreConsoleLogSink>? configure)
+    public static IDisposable AttachSpectreConsole(this ILogger @this, Action<SpectreConsoleLogSink>? configure = null)
     {
         ArgumentNullException.ThrowIfNull(@this);
-        ArgumentNullException.ThrowIfNull(configure);
 
         SpectreConsoleLogSink logSink = new();
 

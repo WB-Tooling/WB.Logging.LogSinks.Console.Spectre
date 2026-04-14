@@ -17,6 +17,20 @@
   </ItemGroup>
 
   <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Package References                                                   │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <ItemGroup Condition="'$(UseLocalProjects)' != 'true'">
+    <PackageReference Include="WB.Logging" />
+  </ItemGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
+       │ Project References                                                   │
+       ╰──────────────────────────────────────────────────────────────────────╯ -->
+  <ItemGroup Condition="'$(UseLocalProjects)' == 'true'">
+    <ProjectReference Include="$(PathToLocalProjects)WB.Logging/src/WB.Logging.csproj" />
+  </ItemGroup>
+
+  <!-- ╭──────────────────────────────────────────────────────────────────────╮
        │ Testing Packages                                                     │
        ╰──────────────────────────────────────────────────────────────────────╯ -->
   <ItemGroup>
