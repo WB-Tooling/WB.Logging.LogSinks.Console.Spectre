@@ -15,7 +15,7 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// to render these parts. Derived classes can override the rendering methods to customize the appearance of log messages.
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
-public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<TValue>
+public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<TValue, IAnsiConsole>
 {
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Private Fields                                                              │
@@ -76,10 +76,11 @@ public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<TVa
     }
 
     // ┌─────────────────────────────────────────────────────────────────────────────┐
-    // │ Internal Properties                                                         │
+    // │ Public Properties                                                           │
     // └─────────────────────────────────────────────────────────────────────────────┘
 
-    internal IAnsiConsole AnsiConsole { get; set; } = global::Spectre.Console.AnsiConsole.Console;
+    /// <inheritdoc/>
+    public IAnsiConsole Writer { get; set; } = AnsiConsole.Console;
 
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Public Methods                                                              │
@@ -95,7 +96,7 @@ public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<TVa
         logMessageWidget.Senders = ShowSenders ? RenderSenders(senders) : null;
         logMessageWidget.Payload = ShowPayload ? RenderPayload(payload) : null;
 
-        AnsiConsole.Write(logMessageWidget);
+        Writer.Write(logMessageWidget);
 
         return ValueTask.CompletedTask;
     }

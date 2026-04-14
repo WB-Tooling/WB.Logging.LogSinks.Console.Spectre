@@ -1,9 +1,9 @@
 [submodule "deps/WB.Logging.Base"]
 	path = deps/WB.Logging.Base
-	url = https://github.com/WolfBublitz/WB.Logging.Base
+	url = https://github.com/WB-Tooling/WB.Logging.Base
 [submodule "deps/WB.Logging.LogSinks.Base"]
 	path = deps/WB.Logging.LogSinks.Base
-	url = https://github.com/WolfBublitz/WB.Logging.LogSinks.Base
+	url = https://github.com/WB-Tooling/WB.Logging.LogSinks.Base
 [submodule "deps/WB.Logging"]
 	path = deps/WB.Logging
-	url = https://github.com/WolfBublitz/WB.Logging
+	url = https://github.com/WB-Tooling/WB.Logging

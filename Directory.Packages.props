@@ -4,6 +4,7 @@
        ╰──────────────────────────────────────────────────────────────────────╯ -->
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <UseLocalProjects>true</UseLocalProjects>
   </PropertyGroup>
 
   <!-- ╭──────────────────────────────────────────────────────────────────────╮
