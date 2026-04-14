@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
@@ -49,7 +50,7 @@ public static class ILoggerExtensions
 
         return @this;
     }
-    
+
     /// <summary>
     /// Logs a horizontal rule to the console.
     /// </summary>
@@ -70,5 +71,22 @@ public static class ILoggerExtensions
         }
 
         return @this;
+    }
+    
+    public static async Task StartProgressAsync(this ILogger @this, string title, Func<ProgressContext, Task> progress)
+    {
+        ArgumentNullException.ThrowIfNull(@this);
+
+        ProgressPayload progressPayload = new()
+        {
+            Title = title,
+            Progress = progress,
+        };
+
+        await @this.FlushAsync().ConfigureAwait(false);
+
+        @this.Log(null, progressPayload);
+
+        await progressPayload.Completed.ConfigureAwait(false);
     }
 }
