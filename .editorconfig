@@ -1,0 +1,4 @@
+[*.{cs,vb}]
+
+# IDE0130: Der Namespace entspricht stimmt nicht der Ordnerstruktur.
+dotnet_diagnostic.IDE0130.severity = none
