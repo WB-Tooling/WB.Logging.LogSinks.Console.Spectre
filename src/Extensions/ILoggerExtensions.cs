@@ -13,6 +13,26 @@ public static class ILoggerExtensions
     // └─────────────────────────────────────────────────────────────────────────────┘
 
     /// <summary>
+    /// Attaches a <see cref="SpectreConsoleLogSink"/> to <paramref name="this"/> <see cref="ILogger"/>.
+    /// </summary>
+    /// <param name="this">The <see cref="ILogger"/> instance to attach the log sink to.</param>
+    /// <param name="configure">An optional action to configure the <see cref="SpectreConsoleLogSink"/> after it has been created and attached.</param>
+    /// <returns>An <see cref="IDisposable"/> that can be used to detach the log sink from the logger when it is no longer needed.</returns>
+    public static IDisposable AttachSpectreConsole(this ILogger @this, Action<SpectreConsoleLogSink>? configure)
+    {
+        ArgumentNullException.ThrowIfNull(@this);
+        ArgumentNullException.ThrowIfNull(configure);
+
+        SpectreConsoleLogSink logSink = new();
+
+        IDisposable disposable = @this.AttachLogSink(logSink);
+
+        configure?.Invoke(logSink);
+
+        return disposable;
+    }
+
+    /// <summary>
     /// Logs the <paramref name="widget"/> as a log message. This method allows you to log any 
     /// Spectre.Console widget directly by passing it as an argument.
     /// </summary>
