@@ -73,6 +73,14 @@ public static class ILoggerExtensions
         return @this;
     }
     
+    /// <summary>
+    /// Starts a progress with the specified <paramref name="title"/> and <paramref name="progress"/> function. 
+    /// The progress will be automatically completed when the <paramref name="progress"/> function completes.
+    /// </summary>
+    /// <param name="this">The <see cref="ILogger"/> instance to start the progress on.</param>
+    /// <param name="title">The title of the progress.</param>
+    /// <param name="progress">The function that performs the progress.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public static async Task StartProgressAsync(this ILogger @this, string title, Func<ProgressContext, Task> progress)
     {
         ArgumentNullException.ThrowIfNull(@this);
