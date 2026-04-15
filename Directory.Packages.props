@@ -20,6 +20,7 @@
        │ 3rd-Party Packages                                                   │
        ╰──────────────────────────────────────────────────────────────────────╯ -->
   <ItemGroup>
+    <PackageVersion Include="MinVer" Version="[7, 8)" />
     <PackageVersion Include="Spectre.Console" Version="[0.55.0, 1)" />
     <PackageVersion Include="Spectre.Console.Analyzer" Version="[1, 2)" />
     <PackageVersion Include="Spectre.Console.Json" Version="[0.55.0, 1)" />
