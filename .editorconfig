@@ -1,4 +1,20 @@
-[*.{cs,vb}]
+# Top-level .editorconfig
+root = true
 
-# IDE0130: Der Namespace entspricht stimmt nicht der Ordnerstruktur.
-dotnet_diagnostic.IDE0130.severity = none
+# Apply to all C# files
+[*.cs]
+indent_style = space
+indent_size = 4
+
+# New line preferences
+end_of_line = crlf
+insert_final_newline = true
+
+# Apply to all XML files
+[*.xml]
+indent_style = space
+indent_size = 2
+
+# New line preferences
+end_of_line = crlf
+insert_final_newline = true

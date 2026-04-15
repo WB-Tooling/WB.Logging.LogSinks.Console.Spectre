@@ -42,6 +42,6 @@ public sealed class TheAttachSpectreConsoleMethod
             .ContainSingle(because: "the AttachSpectreConsole method should attach exactly one log sink to the logger")
             .Which.Should()
             .BeSameAs(capturedLogSink, because: "the SpectreConsoleLogSink passed to the configure action should be the same instance that was attached to the logger");
-        
+
     }
 }

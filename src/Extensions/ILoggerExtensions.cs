@@ -72,7 +72,7 @@ public static class ILoggerExtensions
 
         return @this;
     }
-    
+
     /// <summary>
     /// Starts a progress with the specified <paramref name="title"/> and <paramref name="progress"/> function. 
     /// The progress will be automatically completed when the <paramref name="progress"/> function completes.

@@ -21,10 +21,10 @@ public static class DataProvider
         grid.AddRow("Hello", "World");
         grid.AddRow("Goodbye", "Everyone");
 
-        return grid;    
+        return grid;
     };
 
-    public static Func<IRenderable> FigletWidget  => () => new FigletText("Hello, World!");
+    public static Func<IRenderable> FigletWidget => () => new FigletText("Hello, World!");
 }
 
 public sealed class TheWidgetMethod

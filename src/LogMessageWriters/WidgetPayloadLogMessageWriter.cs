@@ -9,7 +9,7 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 internal sealed class PayloadLogMessageWriter : IAsyncLogMessageWriter<WidgetPayload, IAnsiConsole>
 {
     public IAnsiConsole Writer { get; set; } = AnsiConsole.Console;
-    
+
     public IAsyncLogSink? LogSink { get; set; }
 
     public ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, WidgetPayload? payload)
