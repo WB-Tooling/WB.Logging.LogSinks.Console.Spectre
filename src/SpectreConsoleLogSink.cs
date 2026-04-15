@@ -20,5 +20,6 @@ public sealed class SpectreConsoleLogSink : AsyncLogSinkBase<IAnsiConsole>
     public SpectreConsoleLogSink() : base(new SpectreConsoleLogMessageWriter<object>(), AnsiConsole.Console)
     {
         RegisterLogMessageWriter(new PayloadLogMessageWriter());
+        RegisterLogMessageWriter(new ProgressConsoleMessageWriter());
     }
 }
