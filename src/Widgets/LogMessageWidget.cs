@@ -56,7 +56,7 @@ internal sealed class LogMessageWidget : IRenderable
         yield return spaceSegment;
 
         offset += spaceSegment.CellCount();
-        
+
         foreach (Segment segment in Render(Senders, options, maxWidth - offset))
         {
             yield return segment;

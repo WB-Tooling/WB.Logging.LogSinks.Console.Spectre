@@ -56,7 +56,7 @@ public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<TVa
             BracketStyle = StylePalette.LogLevelStyle.BracketStyle,
             TextStyle = StylePalette.LogLevelStyle.WarningTextStyle,
         };
-        
+
         errorBadge = new BadgeWidget("ERRO")
         {
             BracketStyle = StylePalette.LogLevelStyle.BracketStyle,
