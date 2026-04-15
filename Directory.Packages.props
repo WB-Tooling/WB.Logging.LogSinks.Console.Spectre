@@ -11,15 +11,16 @@
        │ WB Packages                                                          │
        ╰──────────────────────────────────────────────────────────────────────╯ -->
   <ItemGroup>
-    <PackageVersion Include="WB.Logging" Version="[2.0.0-preview.5, 3)" />
-    <PackageVersion Include="WB.Logging.Base" Version="[1.0.0-preview.7, 2)" />
-    <PackageVersion Include="WB.Logging.LogSinks.Base" Version="[1.0.0-preview.4, 2)" />
+    <PackageVersion Include="WB.Logging" Version="[2.0.0-preview.6, 3)" />
+    <PackageVersion Include="WB.Logging.Base" Version="[1.0.0-preview.8, 2)" />
+    <PackageVersion Include="WB.Logging.LogSinks.Base" Version="[1.0.0-preview.5, 2)" />
   </ItemGroup>
 
   <!-- ╭──────────────────────────────────────────────────────────────────────╮
        │ 3rd-Party Packages                                                   │
        ╰──────────────────────────────────────────────────────────────────────╯ -->
   <ItemGroup>
+    <PackageVersion Include="MinVer" Version="[7, 8)" />
     <PackageVersion Include="Spectre.Console" Version="[0.55.0, 1)" />
     <PackageVersion Include="Spectre.Console.Analyzer" Version="[1, 2)" />
     <PackageVersion Include="Spectre.Console.Json" Version="[0.55.0, 1)" />
