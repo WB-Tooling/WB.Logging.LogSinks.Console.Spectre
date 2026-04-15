@@ -11,10 +11,6 @@ permissions:
   contents: read
 
 jobs:
-  validate-version:
-    name: 🧐 Validate Version
-    uses: ./.github/workflows/validate-version-job.yml
-    if: startsWith(github.ref, 'refs/tags/')
 
   build:
     name: 🏗️ Build Nuget Package
