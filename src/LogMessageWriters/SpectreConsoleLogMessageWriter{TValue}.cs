@@ -16,6 +16,7 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
 public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<TValue, IAnsiConsole>
+    where TValue : notnull
 {
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Private Fields                                                              │
@@ -87,7 +88,7 @@ public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<TVa
     // └─────────────────────────────────────────────────────────────────────────────┘
 
     /// <inheritdoc/>
-    public virtual ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, TValue? payload)
+    public virtual ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, TValue payload)
     {
         logMessageWidget.Reset();
 
@@ -194,7 +195,7 @@ public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<TVa
     /// <remarks>This method can be overridden in derived classes to customize the format and style of the rendered payload.</remarks>
     /// <param name="payload">The payload to render.</param>
     /// <returns>An enumerable of <see cref="IRenderable"/> representing the rendered payload.</returns>
-    protected virtual IEnumerable<IRenderable> RenderPayload(TValue? payload)
+    protected virtual IEnumerable<IRenderable> RenderPayload(TValue payload)
     {
         yield return payload.ToRenderable();
     }
