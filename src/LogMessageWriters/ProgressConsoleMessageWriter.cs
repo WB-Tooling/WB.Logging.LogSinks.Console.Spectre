@@ -6,12 +6,27 @@ using WB.Logging.LogSinks.Base;
 
 namespace WB.Logging.LogSinks.Console.Spectre;
 
+/// <summary>
+/// A log message writer that uses Spectre.Console's progress bar to 
+/// render progress updates in the console.
+/// </summary>
 internal sealed class ProgressConsoleMessageWriter : IAsyncLogMessageWriter<ProgressPayload, IAnsiConsole>
 {
+    // ┌─────────────────────────────────────────────────────────────────────────────┐
+    // │ Public Properties                                                           │
+    // └─────────────────────────────────────────────────────────────────────────────┘
+
+    /// <inheritdoc/>
     public IAnsiConsole Writer { get; set; } = AnsiConsole.Console;
 
+    /// <inheritdoc/>
     public IAsyncLogSink? LogSink { get; set; }
 
+    // ┌─────────────────────────────────────────────────────────────────────────────┐
+    // │ Public Methods                                                              │
+    // └─────────────────────────────────────────────────────────────────────────────┘
+
+    /// <inheritdoc/>
     public async ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, ProgressPayload payload)
     {
 #pragma warning disable CA1031 // Do not catch general exception types
