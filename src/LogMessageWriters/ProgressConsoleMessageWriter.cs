@@ -14,12 +14,19 @@ internal sealed class ProgressConsoleMessageWriter : IAsyncLogMessageWriter<Prog
 
     public async ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, ProgressPayload payload)
     {
-        await Writer.Progress()
-            .AutoClear(payload.AutoClear)
-            .AutoRefresh(payload.AutoRefresh)
-            .HideCompleted(payload.HideCompleted)
-            .StartAsync(payload.Progress).ConfigureAwait(false);
+        try
+        {
+            await Writer.Progress()
+                .AutoClear(payload.AutoClear)
+                .AutoRefresh(payload.AutoRefresh)
+                .HideCompleted(payload.HideCompleted)
+                .StartAsync(payload.Progress).ConfigureAwait(false);
 
-        payload.SetCompleted();
+            payload.SetCompleted();
+        }
+        catch (Exception exception)
+        {
+            payload.SetException(exception);
+        }
     }
 }
