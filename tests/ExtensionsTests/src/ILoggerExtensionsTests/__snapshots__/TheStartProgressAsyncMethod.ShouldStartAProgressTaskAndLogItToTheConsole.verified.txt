@@ -1,1 +1,4 @@
-﻿
+﻿[38;5;12mProcessing files[0m: 10%
+[38;5;12mProcessing files[0m: 30%
+[38;5;12mProcessing files[0m: 60%
+[38;5;12mProcessing files[0m: 80%
