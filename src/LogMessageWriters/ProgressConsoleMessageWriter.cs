@@ -14,6 +14,7 @@ internal sealed class ProgressConsoleMessageWriter : IAsyncLogMessageWriter<Prog
 
     public async ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, ProgressPayload payload)
     {
+#pragma warning disable CA1031 // Do not catch general exception types
         try
         {
             await Writer.Progress()
@@ -28,5 +29,6 @@ internal sealed class ProgressConsoleMessageWriter : IAsyncLogMessageWriter<Prog
         {
             payload.SetException(exception);
         }
+#pragma warning restore CA1031 // Do not catch general exception types
     }
 }
