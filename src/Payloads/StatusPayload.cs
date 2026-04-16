@@ -7,7 +7,7 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// <summary>
 /// Represents a payload for logging progress using Spectre.Console's progress bars.
 /// </summary>
-internal sealed class ProgressPayload
+internal sealed class StatusPayload
 {
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Private Fields                                                              │
@@ -19,21 +19,19 @@ internal sealed class ProgressPayload
     // │ Public Properties                                                           │
     // └─────────────────────────────────────────────────────────────────────────────┘
 
+    public required StatusConfiguration Configuration { get; init; }
+
     /// <summary>
-    /// Gets or sets the configuration for the progress. This includes settings such as
-    /// whether the progress should be automatically cleared, refreshed, or hide completed tasks.
+    /// Gets or sets the action that performs the status update.
     /// </summary>
-    /// <seealso cref="ProgressConfiguration"/>
-    public required ProgressConfiguration Configuration { get; init; }
-
-    public required Func<ProgressContext, Task> Action { get; init; }
+    public required Func<StatusContext, Task> Action { get; init; }
 
     /// <summary>
-    /// Gets a <see cref="Task"/> that represents the completion of the progress. The 
-    /// <see cref="Task"/> will complete when the progress is completed or if an exception 
-    /// occurs during the progress. The <see cref="Task"/> will complete successfully if 
-    /// the progress completes successfully, or with an <see cref="Exception"/> if an <see cref="Exception"/> 
-    /// occurs during the progress.
+    /// Gets a <see cref="Task"/> that represents the completion of the status. The 
+    /// <see cref="Task"/> will complete when the status is completed or if an exception 
+    /// occurs during the status update. The <see cref="Task"/> will complete successfully if 
+    /// the status update completes successfully, or with an <see cref="Exception"/> if an <see cref="Exception"/> 
+    /// occurs during the status update.
     /// </summary>
     public Task Completed => taskCompletionSource.Task;
 
@@ -42,17 +40,17 @@ internal sealed class ProgressPayload
     // └─────────────────────────────────────────────────────────────────────────────┘
 
     /// <summary>
-    /// Sets the progress as completed, which will complete the <see cref="Completed"/> 
-    /// task. This method should be called when the progress is completed successfully.
+    /// Sets the status as completed, which will complete the <see cref="Completed"/> 
+    /// task. This method should be called when the status is completed successfully.
     /// </summary>
     public void SetCompleted()
         => taskCompletionSource.TrySetResult();
 
     /// <summary>
-    /// Sets the progress as failed, which will complete the <see cref="Completed"/> 
-    /// task with an exception. This method should be called when an error occurs during the progress.
+    /// Sets the status as failed, which will complete the <see cref="Completed"/> 
+    /// task with an exception. This method should be called when an error occurs during the status update.
     /// </summary>
-    /// <param name="exception">The exception that caused the progress to fail.</param>
+    /// <param name="exception">The exception that caused the status update to fail.</param>
     public void SetException(Exception exception)
         => taskCompletionSource.TrySetException(exception);
 }

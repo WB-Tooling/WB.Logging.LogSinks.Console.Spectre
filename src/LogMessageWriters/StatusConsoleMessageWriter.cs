@@ -7,10 +7,10 @@ using WB.Logging.LogSinks.Base;
 namespace WB.Logging.LogSinks.Console.Spectre;
 
 /// <summary>
-/// A log message writer that uses Spectre.Console's progress bar to 
-/// render progress updates in the console.
+/// A log message writer that uses Spectre.Console's status to 
+/// render status updates in the console.
 /// </summary>
-internal sealed class ProgressConsoleMessageWriter : IAsyncLogMessageWriter<ProgressPayload, IAnsiConsole>
+internal sealed class StatusConsoleMessageWriter : IAsyncLogMessageWriter<StatusPayload, IAnsiConsole>
 {
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Public Properties                                                           │
@@ -27,18 +27,17 @@ internal sealed class ProgressConsoleMessageWriter : IAsyncLogMessageWriter<Prog
     // └─────────────────────────────────────────────────────────────────────────────┘
 
     /// <inheritdoc/>
-    public async ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, ProgressPayload payload)
+    public async ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, StatusPayload payload)
     {
-        ProgressConfiguration progressConfiguration = payload.Configuration;
+        StatusConfiguration statusConfiguration = payload.Configuration;
 
 #pragma warning disable CA1031 // Do not catch general exception types
         try
         {
-            await Writer.Progress()
-                .AutoClear(progressConfiguration.AutoClear)
-                .AutoRefresh(progressConfiguration.AutoRefresh)
-                .HideCompleted(progressConfiguration.HideCompleted)
-                .StartAsync(payload.Action).ConfigureAwait(false);
+            await Writer.Status()
+                .AutoRefresh(statusConfiguration.AutoRefresh)
+                .Spinner(statusConfiguration.Spinner)
+                .StartAsync(statusConfiguration.StatusMessage, payload.Action).ConfigureAwait(false);
 
             payload.SetCompleted();
         }

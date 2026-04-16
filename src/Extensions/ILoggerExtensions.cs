@@ -10,6 +10,8 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// </summary>
 public static class ILoggerExtensions
 {
+    private static readonly ProgressConfiguration defaultProgressConfiguration = new();
+    
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Public Methods                                                              │
     // └─────────────────────────────────────────────────────────────────────────────┘
@@ -74,21 +76,22 @@ public static class ILoggerExtensions
     }
 
     /// <summary>
-    /// Starts a progress with the specified <paramref name="title"/> and <paramref name="progress"/> function. 
-    /// The progress will be automatically completed when the <paramref name="progress"/> function completes.
+    /// Starts a progress with the <paramref name="progressConfiguration"/> running the specified <paramref name="action"/> function. 
+    /// The progress will be automatically completed when the <paramref name="action"/> function completes.
     /// </summary>
     /// <param name="this">The <see cref="ILogger"/> instance to start the progress on.</param>
-    /// <param name="title">The title of the progress.</param>
-    /// <param name="progress">The function that performs the progress.</param>
+    /// <param name="progressConfiguration">The configuration for the progress. This includes settings such as
+    /// <param name="action">The function that performs the progress.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    public static async Task StartProgressAsync(this ILogger @this, string title, Func<ProgressContext, Task> progress)
+    /// <seealso cref="ProgressConfiguration"/>
+    public static async Task StartProgressAsync(this ILogger @this, ProgressConfiguration progressConfiguration, Func<ProgressContext, Task> action)
     {
         ArgumentNullException.ThrowIfNull(@this);
 
         ProgressPayload progressPayload = new()
         {
-            Title = title,
-            Progress = progress,
+            Configuration = progressConfiguration,
+            Action = action,
         };
 
         await @this.FlushAsync().ConfigureAwait(false);
@@ -96,5 +99,41 @@ public static class ILoggerExtensions
         @this.Log(null, progressPayload);
 
         await progressPayload.Completed.ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Starts a progress running the specified <paramref name="action"/> function. 
+    /// The progress will be automatically completed when the <paramref name="action"/> function completes.
+    /// </summary>
+    /// <param name="this">The <see cref="ILogger"/> instance to start the progress on.</param>
+    /// <param name="action">The function that performs the progress.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    public static async Task StartProgressAsync(this ILogger @this, Func<ProgressContext, Task> action)
+        => await StartProgressAsync(@this, defaultProgressConfiguration, action).ConfigureAwait(false);
+
+    public static async Task StartStatusAsync(this ILogger @this, StatusConfiguration statusConfiguration, Func<StatusContext, Task> action)
+    {
+        ArgumentNullException.ThrowIfNull(@this);
+
+        StatusPayload statusPayload = new()
+        {
+            Configuration = statusConfiguration,
+            Action = action,
+        };
+
+        await @this.FlushAsync().ConfigureAwait(false);
+
+        @this.Log(null, statusPayload);
+
+        await statusPayload.Completed.ConfigureAwait(false);
+    }
+
+    public static Task StartStatusAsync(this ILogger @this, string statusMessage, Func<StatusContext, Task> action)
+    {
+        ArgumentNullException.ThrowIfNull(@this);
+
+        StatusConfiguration statusConfiguration = new(statusMessage);
+
+        return StartStatusAsync(@this, statusConfiguration, action);
     }
 }
