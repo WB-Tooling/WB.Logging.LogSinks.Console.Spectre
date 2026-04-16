@@ -29,16 +29,16 @@ internal sealed class ProgressConsoleMessageWriter : IAsyncLogMessageWriter<Prog
     /// <inheritdoc/>
     public async ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, ProgressPayload payload)
     {
-        ProgressConfiguration progressConfiguration = payload.Configuration;
-
 #pragma warning disable CA1031 // Do not catch general exception types
         try
         {
-            await Writer.Progress()
-                .AutoClear(progressConfiguration.AutoClear)
-                .AutoRefresh(progressConfiguration.AutoRefresh)
-                .HideCompleted(progressConfiguration.HideCompleted)
-                .StartAsync(payload.Action).ConfigureAwait(false);
+            using IDisposable _ = payload.CancellationToken.Register(payload.SetCanceled);
+
+            Progress progress = Writer.Progress();
+
+            payload.ProgressConfigurationAction(progress);
+
+            await progress.StartAsync(context => payload.ProgressAction(context, payload.CancellationToken)).ConfigureAwait(false);
 
             payload.SetCompleted();
         }

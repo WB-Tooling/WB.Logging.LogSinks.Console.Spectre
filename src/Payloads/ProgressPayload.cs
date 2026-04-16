@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Spectre.Console;
 
@@ -19,14 +20,11 @@ internal sealed class ProgressPayload
     // │ Public Properties                                                           │
     // └─────────────────────────────────────────────────────────────────────────────┘
 
-    /// <summary>
-    /// Gets or sets the configuration for the progress. This includes settings such as
-    /// whether the progress should be automatically cleared, refreshed, or hide completed tasks.
-    /// </summary>
-    /// <seealso cref="ProgressConfiguration"/>
-    public required ProgressConfiguration Configuration { get; init; }
+    public required Func<ProgressContext, CancellationToken, Task> ProgressAction { get; init; }
 
-    public required Func<ProgressContext, Task> Action { get; init; }
+    public Action<Progress> ProgressConfigurationAction { get; init; } = _ => { };
+
+    public CancellationToken CancellationToken { get; init; } = CancellationToken.None;
 
     /// <summary>
     /// Gets a <see cref="Task"/> that represents the completion of the progress. The 
@@ -55,4 +53,11 @@ internal sealed class ProgressPayload
     /// <param name="exception">The exception that caused the progress to fail.</param>
     public void SetException(Exception exception)
         => taskCompletionSource.TrySetException(exception);
+
+    /// <summary>
+    /// Sets the progress as canceled, which will complete the <see cref="Completed"/> 
+    /// task as canceled.
+    /// </summary>
+    public void SetCanceled()
+        => taskCompletionSource.TrySetCanceled();
 }

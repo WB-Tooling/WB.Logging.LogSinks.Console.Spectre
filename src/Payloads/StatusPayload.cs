@@ -19,12 +19,14 @@ internal sealed class StatusPayload
     // │ Public Properties                                                           │
     // └─────────────────────────────────────────────────────────────────────────────┘
 
-    public required StatusConfiguration Configuration { get; init; }
+    public required string StatusMessage { get; init; }
 
     /// <summary>
     /// Gets or sets the action that performs the status update.
     /// </summary>
-    public required Func<StatusContext, Task> Action { get; init; }
+    public required Func<StatusContext, Task> StatusAction { get; init; }
+
+    public Action<Status> StatusConfigurationAction { get; init; } = _ => { };
 
     /// <summary>
     /// Gets a <see cref="Task"/> that represents the completion of the status. The 

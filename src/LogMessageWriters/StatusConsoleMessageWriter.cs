@@ -29,15 +29,14 @@ internal sealed class StatusConsoleMessageWriter : IAsyncLogMessageWriter<Status
     /// <inheritdoc/>
     public async ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, StatusPayload payload)
     {
-        StatusConfiguration statusConfiguration = payload.Configuration;
-
 #pragma warning disable CA1031 // Do not catch general exception types
         try
         {
-            await Writer.Status()
-                .AutoRefresh(statusConfiguration.AutoRefresh)
-                .Spinner(statusConfiguration.Spinner)
-                .StartAsync(statusConfiguration.StatusMessage, payload.Action).ConfigureAwait(false);
+            Status status = Writer.Status();
+
+            payload.StatusConfigurationAction(status);
+
+            await status.StartAsync(payload.StatusMessage, payload.StatusAction).ConfigureAwait(false);
 
             payload.SetCompleted();
         }
