@@ -74,6 +74,13 @@ public static class ILoggerExtensions
         return @this;
     }
 
+    /// <summary>
+    /// Logs a <see cref="Progress"/> to the console.
+    /// </summary>
+    /// <param name="this">The <see cref="ILogger"/> instance to log the progress to.</param>
+    /// <param name="action">An action that receives the <see cref="Progress"/> instance to configure it and add tasks to it.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the progress operation.</param>
+    /// <returns>A <see cref="Task"/> that represents the asynchronous progress operation.</returns>
     public static async Task ProgressAsync(this ILogger @this, Func<Progress, Task> action, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(@this);
@@ -99,64 +106,4 @@ public static class ILoggerExtensions
 
         await finishedPayload.WaitForFinishedAsync().ConfigureAwait(false);
     }
-
-    /// <summary>
-    /// Starts a progress with the <paramref name="progressConfiguration"/> running the specified <paramref name="action"/> function. 
-    /// The progress will be automatically completed when the <paramref name="action"/> function completes.
-    /// </summary>
-    /// <param name="this">The <see cref="ILogger"/> instance to start the progress on.</param>
-    /// <param name="progressConfiguration">The configuration for the progress. This includes settings such as
-    /// <param name="action">The function that performs the progress.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
-    /// <seealso cref="ProgressConfiguration"/>
-    public static async Task StartProgressAsync(this ILogger @this, Action<Progress> progress, Func<ProgressContext, CancellationToken, Task> action, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(@this);
-
-        ProgressPayload progressPayload = new()
-        {
-            ProgressConfigurationAction = progress,
-            ProgressAction = action,
-            CancellationToken = cancellationToken,
-        };
-
-        await @this.FlushAsync(cancellationToken).ConfigureAwait(false);
-
-        @this.Log(null, progressPayload);
-
-        await progressPayload.Completed.ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Starts a progress running the specified <paramref name="action"/> function. 
-    /// The progress will be automatically completed when the <paramref name="action"/> function completes.
-    /// </summary>
-    /// <param name="this">The <see cref="ILogger"/> instance to start the progress on.</param>
-    /// <param name="action">The function that performs the progress.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
-    public static async Task StartProgressAsync(this ILogger @this, Func<ProgressContext, CancellationToken, Task> action, CancellationToken cancellationToken = default)
-        => await StartProgressAsync(@this, _ => { }, action, cancellationToken).ConfigureAwait(false);
-
-    public static async Task StartStatusAsync(this ILogger @this, string message, Action<Status> status, Func<StatusContext, CancellationToken, Task> action, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(@this);
-
-        StatusPayload statusPayload = new()
-        {
-            StatusConfigurationAction = status,
-            StatusAction = action,
-            StatusMessage = message,
-            CancellationToken = cancellationToken,
-        };
-
-        await @this.FlushAsync(cancellationToken).ConfigureAwait(false);
-
-        @this.Log(null, statusPayload);
-
-        await statusPayload.Completed.ConfigureAwait(false);
-    }
-
-    public static Task StartStatusAsync(this ILogger @this, string statusMessage, Func<StatusContext, Task> action)
-        => StartStatusAsync(@this, statusMessage, _ => { }, (context, cancellationToken) => action(context), CancellationToken.None);
 }
