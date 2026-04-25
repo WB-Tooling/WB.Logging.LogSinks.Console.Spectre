@@ -14,6 +14,8 @@ internal sealed class ProgressConsoleMessageWriter
     : IAsyncLogMessageWriter<ProgressStartPayload, IAnsiConsole>
     , IAsyncLogMessageWriter<ProgressFinishedPayload, IAnsiConsole>
 {
+    private readonly ProgressFinishedPayloadOnlyFilter progressFinishedPayloadOnlyFilter = new();
+
     private IDisposable? logSinkDisabledSubscription;
 
     // ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -34,7 +36,7 @@ internal sealed class ProgressConsoleMessageWriter
     {
         if (logSinkDisabledSubscription is null)
         {
-            logSinkDisabledSubscription = LogSink?.Disable();
+            logSinkDisabledSubscription = LogSink?.AddFilter(progressFinishedPayloadOnlyFilter);
 
             payload.SetProgress(Writer.Progress());
         }
