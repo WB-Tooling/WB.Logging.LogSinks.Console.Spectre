@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageVersion Include="WB.Logging" Version="[2.0.0-preview.6, 3)" />
     <PackageVersion Include="WB.Logging.Base" Version="[1.0.0-preview.8, 2)" />
-    <PackageVersion Include="WB.Logging.LogSinks.Base" Version="[1.0.0-preview.7, 2)" />
+    <PackageVersion Include="WB.Logging.LogSinks.Base" Version="[1.0.0-preview.9, 2)" />
   </ItemGroup>
 
   <!-- ╭──────────────────────────────────────────────────────────────────────╮
