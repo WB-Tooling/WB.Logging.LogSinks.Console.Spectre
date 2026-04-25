@@ -106,4 +106,37 @@ public static class ILoggerExtensions
 
         await finishedPayload.WaitForFinishedAsync().ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Logs a <see cref="Status"/> to the console.
+    /// </summary>
+    /// <param name="this">The <see cref="ILogger"/> instance to log the status to.</param>
+    /// <param name="action">An action that receives the <see cref="Status"/> instance to configure it and add tasks to it.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the status operation.</param>
+    /// <returns>A <see cref="Task"/> that represents the asynchronous status operation.</returns>
+    public static async Task StatusAsync(this ILogger @this, Func<Status, Task> action, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(@this);
+        ArgumentNullException.ThrowIfNull(action);
+
+        StatusStartPayload startPayload = new()
+        {
+            CancellationToken = cancellationToken,
+        };
+
+        @this.Log(null, startPayload);
+
+        Status status = await startPayload.WaitForStatusAsync().ConfigureAwait(false);
+
+        await action(status).ConfigureAwait(false);
+
+        StatusFinishedPayload finishedPayload = new()
+        {
+            CancellationToken = cancellationToken,
+        };
+
+        @this.Log(null, finishedPayload);
+
+        await finishedPayload.WaitForFinishedAsync().ConfigureAwait(false);
+    }
 }

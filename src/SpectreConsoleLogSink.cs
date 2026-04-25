@@ -12,6 +12,8 @@ public sealed class SpectreConsoleLogSink : AsyncLogSinkBase<IAnsiConsole>
 {
     private readonly ProgressConsoleMessageWriter progressConsoleMessageWriter = new();
 
+    private readonly StatusConsoleMessageWriter statusConsoleMessageWriter = new();
+
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Public Constructors                                                         │
     // └─────────────────────────────────────────────────────────────────────────────┘
@@ -24,5 +26,7 @@ public sealed class SpectreConsoleLogSink : AsyncLogSinkBase<IAnsiConsole>
         RegisterLogMessageWriter(new PayloadLogMessageWriter());
         RegisterLogMessageWriter<ProgressStartPayload>(progressConsoleMessageWriter);
         RegisterLogMessageWriter<ProgressFinishedPayload>(progressConsoleMessageWriter);
+        RegisterLogMessageWriter<StatusStartPayload>(statusConsoleMessageWriter);
+        RegisterLogMessageWriter<StatusFinishedPayload>(statusConsoleMessageWriter);
     }
 }
