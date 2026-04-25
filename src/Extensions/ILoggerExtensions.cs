@@ -74,6 +74,32 @@ public static class ILoggerExtensions
         return @this;
     }
 
+    public static async Task ProgressAsync(this ILogger @this, Func<Progress, Task> action, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(@this);
+        ArgumentNullException.ThrowIfNull(action);
+
+        ProgressStartPayload startPayload = new()
+        {
+            CancellationToken = cancellationToken,
+        };
+
+        @this.Log(null, startPayload);
+
+        Progress progress = await startPayload.WaitForProgressAsync().ConfigureAwait(false);
+
+        await action(progress).ConfigureAwait(false);
+
+        ProgressFinishedPayload finishedPayload = new()
+        {
+            CancellationToken = cancellationToken,
+        };
+
+        @this.Log(null, finishedPayload);
+
+        await finishedPayload.WaitForFinishedAsync().ConfigureAwait(false);
+    }
+
     /// <summary>
     /// Starts a progress with the <paramref name="progressConfiguration"/> running the specified <paramref name="action"/> function. 
     /// The progress will be automatically completed when the <paramref name="action"/> function completes.
@@ -112,7 +138,7 @@ public static class ILoggerExtensions
     public static async Task StartProgressAsync(this ILogger @this, Func<ProgressContext, CancellationToken, Task> action, CancellationToken cancellationToken = default)
         => await StartProgressAsync(@this, _ => { }, action, cancellationToken).ConfigureAwait(false);
 
-    public static async Task StartStatusAsync(this ILogger @this, string message, Action<Status> status, Func<StatusContext, Task> action)
+    public static async Task StartStatusAsync(this ILogger @this, string message, Action<Status> status, Func<StatusContext, CancellationToken, Task> action, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(@this);
 
@@ -121,9 +147,10 @@ public static class ILoggerExtensions
             StatusConfigurationAction = status,
             StatusAction = action,
             StatusMessage = message,
+            CancellationToken = cancellationToken,
         };
 
-        await @this.FlushAsync().ConfigureAwait(false);
+        await @this.FlushAsync(cancellationToken).ConfigureAwait(false);
 
         @this.Log(null, statusPayload);
 
@@ -131,5 +158,5 @@ public static class ILoggerExtensions
     }
 
     public static Task StartStatusAsync(this ILogger @this, string statusMessage, Func<StatusContext, Task> action)
-        => StartStatusAsync(@this, statusMessage, _ => { }, action);
+        => StartStatusAsync(@this, statusMessage, _ => { }, (context, cancellationToken) => action(context), CancellationToken.None);
 }

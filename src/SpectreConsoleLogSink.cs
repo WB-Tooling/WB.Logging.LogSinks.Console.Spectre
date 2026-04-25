@@ -10,6 +10,8 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// </summary>
 public sealed class SpectreConsoleLogSink : AsyncLogSinkBase<IAnsiConsole>
 {
+    private readonly ProgressConsoleMessageWriter progressConsoleMessageWriter = new();
+
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Public Constructors                                                         │
     // └─────────────────────────────────────────────────────────────────────────────┘
@@ -20,6 +22,7 @@ public sealed class SpectreConsoleLogSink : AsyncLogSinkBase<IAnsiConsole>
     public SpectreConsoleLogSink() : base(new SpectreConsoleLogMessageWriter<object>(), AnsiConsole.Console)
     {
         RegisterLogMessageWriter(new PayloadLogMessageWriter());
-        RegisterLogMessageWriter(new ProgressConsoleMessageWriter());
+        RegisterLogMessageWriter<ProgressStartPayload>(progressConsoleMessageWriter);
+        RegisterLogMessageWriter<ProgressFinishedPayload>(progressConsoleMessageWriter);
     }
 }

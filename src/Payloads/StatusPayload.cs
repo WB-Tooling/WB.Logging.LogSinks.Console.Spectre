@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Spectre.Console;
 
@@ -24,9 +25,11 @@ internal sealed class StatusPayload
     /// <summary>
     /// Gets or sets the action that performs the status update.
     /// </summary>
-    public required Func<StatusContext, Task> StatusAction { get; init; }
+    public required Func<StatusContext, CancellationToken, Task> StatusAction { get; init; }
 
     public Action<Status> StatusConfigurationAction { get; init; } = _ => { };
+
+    public CancellationToken CancellationToken { get; init; } = CancellationToken.None;
 
     /// <summary>
     /// Gets a <see cref="Task"/> that represents the completion of the status. The 

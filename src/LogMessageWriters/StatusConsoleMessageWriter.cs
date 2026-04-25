@@ -36,7 +36,7 @@ internal sealed class StatusConsoleMessageWriter : IAsyncLogMessageWriter<Status
 
             payload.StatusConfigurationAction(status);
 
-            await status.StartAsync(payload.StatusMessage, payload.StatusAction).ConfigureAwait(false);
+            await status.StartAsync(payload.StatusMessage, context => payload.StatusAction(context, payload.CancellationToken)).ConfigureAwait(false);
 
             payload.SetCompleted();
         }
