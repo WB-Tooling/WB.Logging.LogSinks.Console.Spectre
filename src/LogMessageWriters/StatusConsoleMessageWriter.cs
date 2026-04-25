@@ -10,8 +10,14 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// A log message writer that uses Spectre.Console's status to 
 /// render status updates in the console.
 /// </summary>
-internal sealed class StatusConsoleMessageWriter : IAsyncLogMessageWriter<StatusPayload, IAnsiConsole>
+internal sealed class StatusConsoleMessageWriter
+    : IAsyncLogMessageWriter<StatusStartPayload, IAnsiConsole>
+    , IAsyncLogMessageWriter<StatusFinishedPayload, IAnsiConsole>
 {
+    private readonly StatusFinishedPayloadOnlyFilter statusFinishedPayloadOnlyFilter = new();
+
+    private IDisposable? logSinkDisabledSubscription;
+
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Public Properties                                                           │
     // └─────────────────────────────────────────────────────────────────────────────┘
@@ -26,24 +32,28 @@ internal sealed class StatusConsoleMessageWriter : IAsyncLogMessageWriter<Status
     // │ Public Methods                                                              │
     // └─────────────────────────────────────────────────────────────────────────────┘
 
-    /// <inheritdoc/>
-    public async ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, StatusPayload payload)
+    public ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, StatusStartPayload payload)
     {
-#pragma warning disable CA1031 // Do not catch general exception types
-        try
+        if (logSinkDisabledSubscription is null)
         {
-            Status status = Writer.Status();
+            logSinkDisabledSubscription = LogSink?.AddFilter(statusFinishedPayloadOnlyFilter);
 
-            payload.StatusConfigurationAction(status);
-
-            await status.StartAsync(payload.StatusMessage, context => payload.StatusAction(context, payload.CancellationToken)).ConfigureAwait(false);
-
-            payload.SetCompleted();
+            payload.SetStatus(Writer.Status());
         }
-        catch (Exception exception)
+
+        return ValueTask.CompletedTask;
+    }
+
+    public ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, StatusFinishedPayload payload)
+    {
+        if (logSinkDisabledSubscription is not null)
         {
-            payload.SetException(exception);
+            logSinkDisabledSubscription.Dispose();
+            logSinkDisabledSubscription = null;
+
+            payload.SetFinished();
         }
-#pragma warning restore CA1031 // Do not catch general exception types
+
+        return ValueTask.CompletedTask;
     }
 }
