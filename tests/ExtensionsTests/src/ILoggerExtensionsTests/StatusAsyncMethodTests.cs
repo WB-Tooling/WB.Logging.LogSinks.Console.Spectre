@@ -17,7 +17,7 @@ public sealed class TheStatusAsyncMethod
         ILogger logger = new Logger("test");
         logger.AttachSpectreConsole(logSink =>
         {
-            logSink.Writer = testConsole;
+            logSink.Console = testConsole;
         });
 
         // Act

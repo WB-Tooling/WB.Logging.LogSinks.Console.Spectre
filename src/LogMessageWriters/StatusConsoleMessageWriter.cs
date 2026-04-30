@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Spectre.Console;
 using WB.Logging.LogSinks.Base;
@@ -11,11 +12,9 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// render status updates in the console.
 /// </summary>
 internal sealed class StatusConsoleMessageWriter
-    : IAsyncLogMessageWriter<StatusStartPayload, IAnsiConsole>
-    , IAsyncLogMessageWriter<StatusFinishedPayload, IAnsiConsole>
+    : IAsyncLogMessageWriter<SpectreConsoleLogSink, StatusStartPayload>
+    , IAsyncLogMessageWriter<SpectreConsoleLogSink, StatusFinishedPayload>
 {
-    private readonly StatusFinishedPayloadOnlyFilter statusFinishedPayloadOnlyFilter = new();
-
     private IDisposable? logSinkDisabledSubscription;
 
     // ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -26,7 +25,8 @@ internal sealed class StatusConsoleMessageWriter
     public IAnsiConsole Writer { get; set; } = AnsiConsole.Console;
 
     /// <inheritdoc/>
-    public IAsyncLogSink? LogSink { get; set; }
+    [NotNull]
+    public SpectreConsoleLogSink? LogSink { get; set; }
 
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Public Methods                                                              │
@@ -34,11 +34,11 @@ internal sealed class StatusConsoleMessageWriter
 
     public ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, StatusStartPayload payload)
     {
-        if (logSinkDisabledSubscription is null)
+        if (logSinkDisabledSubscription is null && LogSink is not null)
         {
-            logSinkDisabledSubscription = LogSink?.AddFilter(statusFinishedPayloadOnlyFilter);
+            logSinkDisabledSubscription = LogSink.AddFilter<object>(lm => lm.Payload is StatusFinishedPayload);
 
-            payload.SetStatus(Writer.Status());
+            payload.SetStatus(LogSink.Console.Status());
         }
 
         return ValueTask.CompletedTask;

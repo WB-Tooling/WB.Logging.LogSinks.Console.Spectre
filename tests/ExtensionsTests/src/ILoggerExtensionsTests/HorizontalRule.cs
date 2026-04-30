@@ -19,7 +19,7 @@ public sealed class TheHorizontalRuleMethod
         Logger logger = new("Test");
         logger.AttachSpectreConsole(logSink =>
         {
-            logSink.Writer = testConsole;
+            logSink.Console = testConsole;
         });
 
         // Act

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Spectre.Console;
 using WB.Logging.LogSinks.Base;
@@ -11,11 +12,9 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// render progress updates in the console.
 /// </summary>
 internal sealed class ProgressConsoleMessageWriter
-    : IAsyncLogMessageWriter<ProgressStartPayload, IAnsiConsole>
-    , IAsyncLogMessageWriter<ProgressFinishedPayload, IAnsiConsole>
+    : IAsyncLogMessageWriter<SpectreConsoleLogSink, ProgressStartPayload>
+    , IAsyncLogMessageWriter<SpectreConsoleLogSink, ProgressFinishedPayload>
 {
-    private readonly ProgressFinishedPayloadOnlyFilter progressFinishedPayloadOnlyFilter = new();
-
     private IDisposable? logSinkDisabledSubscription;
 
     // ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -23,10 +22,8 @@ internal sealed class ProgressConsoleMessageWriter
     // └─────────────────────────────────────────────────────────────────────────────┘
 
     /// <inheritdoc/>
-    public IAnsiConsole Writer { get; set; } = AnsiConsole.Console;
-
-    /// <inheritdoc/>
-    public IAsyncLogSink? LogSink { get; set; }
+    [NotNull]
+    public SpectreConsoleLogSink? LogSink { get; set; }
 
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Public Methods                                                              │
@@ -36,9 +33,9 @@ internal sealed class ProgressConsoleMessageWriter
     {
         if (logSinkDisabledSubscription is null)
         {
-            logSinkDisabledSubscription = LogSink?.AddFilter(progressFinishedPayloadOnlyFilter);
+            logSinkDisabledSubscription = LogSink.AddFilter<object>(lm => lm.Payload is ProgressFinishedPayload);
 
-            payload.SetProgress(Writer.Progress());
+            payload.SetProgress(LogSink.Console.Progress());
         }
 
         return ValueTask.CompletedTask;
