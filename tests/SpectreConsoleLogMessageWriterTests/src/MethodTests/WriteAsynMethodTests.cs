@@ -24,7 +24,7 @@ public sealed class TheWriteAsyncMethod
         {
             EmitAnsiSequences = true
         };
-        logMessageWriter.Writer = testConsole;
+        logMessageWriter.LogSink.Console = testConsole;
         logMessageWriter.WriteAsync(
             timestamp: new DateTimeOffset(2024, 6, 1, 12, 0, 0, TimeSpan.Zero),
             logLevel: logLevel,
@@ -48,7 +48,7 @@ public sealed class TheWriteAsyncMethod
         {
             EmitAnsiSequences = true
         };
-        logMessageWriter.Writer = testConsole;
+        logMessageWriter.LogSink.Console = testConsole;
         logMessageWriter.WriteAsync(
             timestamp: new DateTimeOffset(2024, 6, 1, 12, 0, 0, TimeSpan.Zero),
             logLevel: null,
