@@ -11,9 +11,9 @@
        │ WB Packages                                                          │
        ╰──────────────────────────────────────────────────────────────────────╯ -->
   <ItemGroup>
-    <PackageVersion Include="WB.Logging" Version="[2.0.0-preview.9, 3.0.0)" />
-    <PackageVersion Include="WB.Logging.Base" Version="[1.0.0-preview.12, 2.0.0)" />
-    <PackageVersion Include="WB.Logging.LogSinks.Base" Version="[1.0.0-preview.9, 2.0.0)" />
+    <PackageVersion Include="WB.Logging" Version="[2.0.0-preview.9, 3)" />
+    <PackageVersion Include="WB.Logging.Base" Version="[1.0.0-preview.14, 2.0.0)" />
+    <PackageVersion Include="WB.Logging.LogSinks.Base" Version="[1.0.0-preview.10, 2.0.0)" />
   </ItemGroup>
 
   <!-- ╭──────────────────────────────────────────────────────────────────────╮
@@ -35,11 +35,11 @@
     <PackageVersion Include="AwesomeAssertions.Analyzers" Version="9.0.8" />
     <PackageVersion Include="FakeItEasy" Version="9.0.1" />
     <PackageVersion Include="FakeItEasy.Analyzer.CSharp" Version="6.1.1" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.203" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.300" />
     <PackageVersion Include="Microsoft.Testing.Platform" Version="2.0.2" />
     <PackageVersion Include="Spectre.Console.Testing" Version="[0.55.2, 1.0.0)" />
     <PackageVersion Include="TUnit" Version="1.40.10" />
-    <PackageVersion Include="Verify" Version="31.16.1" />
-    <PackageVersion Include="Verify.TUnit" Version="31.16.1" />
+    <PackageVersion Include="Verify" Version="31.16.2" />
+    <PackageVersion Include="Verify.TUnit" Version="31.16.2" />
   </ItemGroup>
 </Project>
