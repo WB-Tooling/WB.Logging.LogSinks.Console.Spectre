@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using AwesomeAssertions;
 using WB.Logging;
 using WB.Logging.LogSinks.Console.Spectre;
@@ -8,13 +9,13 @@ namespace ExtensionsTests.ILoggerExtensionsTests.AttacheSpectreConsoleMethodTest
 public sealed class TheAttachSpectreConsoleMethod
 {
     [Test]
-    public void ShouldAttachANewSpectreConsoleLogSinkToTheLogger()
+    public async Task ShouldAttachANewSpectreConsoleLogSinkToTheLogger()
     {
         // Arrange
         Logger logger = new("Test");
 
         // Act
-        using IDisposable disposable = logger.AttachSpectreConsole();
+        await using IAsyncDisposable disposable = logger.AttachSpectreConsole();
 
         // Assert
         logger.AsyncLogSinks.Should()
@@ -24,14 +25,14 @@ public sealed class TheAttachSpectreConsoleMethod
     }
 
     [Test]
-    public void ShouldAcceptAnActionThatProvidesAccessToTheSpectreConsoleLogSink()
+    public async Task ShouldAcceptAnActionThatProvidesAccessToTheSpectreConsoleLogSink()
     {
         // Arrange
         Logger logger = new("Test");
         SpectreConsoleLogSink? capturedLogSink = null;
 
         // Act
-        using IDisposable disposable = logger.AttachSpectreConsole(logSink =>
+        await using IAsyncDisposable disposable = logger.AttachSpectreConsole(logSink =>
         {
             capturedLogSink = logSink;
         });

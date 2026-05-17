@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Spectre.Console;
 using Spectre.Console.Rendering;
@@ -20,7 +21,7 @@ public static class ILoggerExtensions
     /// <param name="this">The <see cref="ILogger"/> instance to attach the log sink to.</param>
     /// <param name="configure">An optional action to configure the <see cref="SpectreConsoleLogSink"/> after it has been created and attached.</param>
     /// <returns>An <see cref="IDisposable"/> that can be used to detach the log sink from the logger when it is no longer needed.</returns>
-    public static IDisposable AttachSpectreConsole(this ILogger @this, Action<SpectreConsoleLogSink>? configure = null)
+    public static IAsyncDisposable AttachSpectreConsole(this ILogger @this, Action<SpectreConsoleLogSink>? configure = null)
     {
         ArgumentNullException.ThrowIfNull(@this);
 
@@ -30,7 +31,11 @@ public static class ILoggerExtensions
 
         configure?.Invoke(logSink);
 
-        return disposable;
+        return new ActionDisposable(async () =>
+        {
+            disposable.Dispose();
+            await logSink.DisposeAsync().ConfigureAwait(false);
+        });
     }
 
     /// <summary>
@@ -74,27 +79,68 @@ public static class ILoggerExtensions
     }
 
     /// <summary>
-    /// Starts a progress with the specified <paramref name="title"/> and <paramref name="progress"/> function. 
-    /// The progress will be automatically completed when the <paramref name="progress"/> function completes.
+    /// Logs a <see cref="Progress"/> to the console.
     /// </summary>
-    /// <param name="this">The <see cref="ILogger"/> instance to start the progress on.</param>
-    /// <param name="title">The title of the progress.</param>
-    /// <param name="progress">The function that performs the progress.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
-    public static async Task StartProgressAsync(this ILogger @this, string title, Func<ProgressContext, Task> progress)
+    /// <param name="this">The <see cref="ILogger"/> instance to log the progress to.</param>
+    /// <param name="action">An action that receives the <see cref="Progress"/> instance to configure it and add tasks to it.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the progress operation.</param>
+    /// <returns>A <see cref="Task"/> that represents the asynchronous progress operation.</returns>
+    public static async Task ProgressAsync(this ILogger @this, Func<Progress, Task> action, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(@this);
+        ArgumentNullException.ThrowIfNull(action);
 
-        ProgressPayload progressPayload = new()
+        ProgressStartPayload startPayload = new()
         {
-            Title = title,
-            Progress = progress,
+            CancellationToken = cancellationToken,
         };
 
-        await @this.FlushAsync().ConfigureAwait(false);
+        @this.Log(null, startPayload);
 
-        @this.Log(null, progressPayload);
+        Progress progress = await startPayload.WaitForProgressAsync().ConfigureAwait(false);
 
-        await progressPayload.Completed.ConfigureAwait(false);
+        await action(progress).ConfigureAwait(false);
+
+        ProgressFinishedPayload finishedPayload = new()
+        {
+            CancellationToken = cancellationToken,
+        };
+
+        @this.Log(null, finishedPayload);
+
+        await finishedPayload.WaitForFinishedAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Logs a <see cref="Status"/> to the console.
+    /// </summary>
+    /// <param name="this">The <see cref="ILogger"/> instance to log the status to.</param>
+    /// <param name="action">An action that receives the <see cref="Status"/> instance to configure it and add tasks to it.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the status operation.</param>
+    /// <returns>A <see cref="Task"/> that represents the asynchronous status operation.</returns>
+    public static async Task StatusAsync(this ILogger @this, Func<Status, Task> action, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(@this);
+        ArgumentNullException.ThrowIfNull(action);
+
+        StatusStartPayload startPayload = new()
+        {
+            CancellationToken = cancellationToken,
+        };
+
+        @this.Log(null, startPayload);
+
+        Status status = await startPayload.WaitForStatusAsync().ConfigureAwait(false);
+
+        await action(status).ConfigureAwait(false);
+
+        StatusFinishedPayload finishedPayload = new()
+        {
+            CancellationToken = cancellationToken,
+        };
+
+        @this.Log(null, finishedPayload);
+
+        await finishedPayload.WaitForFinishedAsync().ConfigureAwait(false);
     }
 }

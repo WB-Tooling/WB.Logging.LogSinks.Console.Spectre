@@ -12,8 +12,8 @@
        ╰──────────────────────────────────────────────────────────────────────╯ -->
   <ItemGroup>
     <PackageVersion Include="WB.Logging" Version="[2.0.0-preview.9, 3)" />
-    <PackageVersion Include="WB.Logging.Base" Version="[1.0.0-preview.14, 2.0.0)" />
-    <PackageVersion Include="WB.Logging.LogSinks.Base" Version="[1.0.0-preview.10, 2.0.0)" />
+    <PackageVersion Include="WB.Logging.Base" Version="[1.0.0-preview.16, 2)" />
+    <PackageVersion Include="WB.Logging.LogSinks.Base" Version="[1.0.0-preview.13, 2)" />
   </ItemGroup>
 
   <!-- ╭──────────────────────────────────────────────────────────────────────╮

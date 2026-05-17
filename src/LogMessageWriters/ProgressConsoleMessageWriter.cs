@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 using Spectre.Console;
 using WB.Logging.LogSinks.Base;
@@ -10,40 +12,39 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// A log message writer that uses Spectre.Console's progress bar to 
 /// render progress updates in the console.
 /// </summary>
-internal sealed class ProgressConsoleMessageWriter : IAsyncLogMessageWriter<ProgressPayload, IAnsiConsole>
+internal sealed class ProgressConsoleMessageWriter(SpectreConsoleLogSink logSink)
+    : IAsyncLogMessageWriter<ProgressStartPayload>
+    , IAsyncLogMessageWriter<ProgressFinishedPayload>
 {
-    // ┌─────────────────────────────────────────────────────────────────────────────┐
-    // │ Public Properties                                                           │
-    // └─────────────────────────────────────────────────────────────────────────────┘
-
-    /// <inheritdoc/>
-    public IAnsiConsole Writer { get; set; } = AnsiConsole.Console;
-
-    /// <inheritdoc/>
-    public IAsyncLogSink? LogSink { get; set; }
+    private IDisposable? logSinkDisabledSubscription;
 
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Public Methods                                                              │
     // └─────────────────────────────────────────────────────────────────────────────┘
 
-    /// <inheritdoc/>
-    public async ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, ProgressPayload payload)
+    public ValueTask WriteAsync(ILogMessage<ProgressStartPayload> logMessage, CancellationToken cancellationToken)
     {
-#pragma warning disable CA1031 // Do not catch general exception types
-        try
+        if (logSinkDisabledSubscription is null)
         {
-            await Writer.Progress()
-                .AutoClear(payload.AutoClear)
-                .AutoRefresh(payload.AutoRefresh)
-                .HideCompleted(payload.HideCompleted)
-                .StartAsync(payload.Progress).ConfigureAwait(false);
+            logSinkDisabledSubscription = logSink.AddFilter<ProgressFinishedPayload>(lm => lm.Payload is ProgressFinishedPayload);
 
-            payload.SetCompleted();
+            logMessage.Payload.SetProgress(logSink.Console.Progress());
         }
-        catch (Exception exception)
-        {
-            payload.SetException(exception);
-        }
-#pragma warning restore CA1031 // Do not catch general exception types
+
+        return ValueTask.CompletedTask;
     }
+
+    public ValueTask WriteAsync(ILogMessage<ProgressFinishedPayload> logMessage, CancellationToken cancellationToken)
+    {
+        if (logSinkDisabledSubscription is not null)
+        {
+            logSinkDisabledSubscription.Dispose();
+            logSinkDisabledSubscription = null;
+
+            logMessage.Payload.SetFinished();
+        }
+
+        return ValueTask.CompletedTask;
+    }
+
 }

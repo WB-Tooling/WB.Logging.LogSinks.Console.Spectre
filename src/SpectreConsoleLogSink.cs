@@ -1,3 +1,7 @@
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading;
+using System.Threading.Tasks;
 using Spectre.Console;
 using WB.Logging.LogSinks.Base;
 
@@ -8,8 +12,13 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// Spectre.Console. This log sink is designed to be attached to an <see cref="ILogger"/> 
 /// instance, allowing you to log messages with rich formatting and interactive widgets provided by Spectre.Console.
 /// </summary>
-public sealed class SpectreConsoleLogSink : AsyncLogSinkBase<IAnsiConsole>
+public sealed class SpectreConsoleLogSink : AsyncLogSinkBase<SpectreConsoleLogSink>
 {
+    // ┌─────────────────────────────────────────────────────────────────────────────┐
+    // │ Private Fields                                                              │
+    // └─────────────────────────────────────────────────────────────────────────────┘
+    private readonly LogMessageFilterPipeline logMessageFilterPipeline = new();
+
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Public Constructors                                                         │
     // └─────────────────────────────────────────────────────────────────────────────┘
@@ -17,9 +26,37 @@ public sealed class SpectreConsoleLogSink : AsyncLogSinkBase<IAnsiConsole>
     /// <summary>
     /// Initializes a new instance of the <see cref="SpectreConsoleLogSink"/> class.
     /// </summary>
-    public SpectreConsoleLogSink() : base(new SpectreConsoleLogMessageWriter<object>(), AnsiConsole.Console)
+    [SetsRequiredMembers]
+    public SpectreConsoleLogSink() : base()
     {
-        RegisterLogMessageWriter(new PayloadLogMessageWriter());
-        RegisterLogMessageWriter(new ProgressConsoleMessageWriter());
+        DefaultLogMessageWriter = new SpectreConsoleLogMessageWriter<object>(this);
+
+        RegisterLogMessageWriter<WidgetPayloadLogMessageWriter>();
+        RegisterLogMessageWriter<ProgressConsoleMessageWriter>();
+        RegisterLogMessageWriter<StatusConsoleMessageWriter>();
+        RegisterLogMessageWriter<WidgetPayloadLogMessageWriter>();
+
+        ServiceContainer.RegisterInstance(this);
+        ServiceContainer.RegisterInstance(Console);
     }
+
+    // ┌─────────────────────────────────────────────────────────────────────────────┐
+    // │ Internal Properties                                                         │
+    // └─────────────────────────────────────────────────────────────────────────────┘
+    internal IAnsiConsole Console { get; set; } = AnsiConsole.Console;
+
+    // ┌─────────────────────────────────────────────────────────────────────────────┐
+    // │ Public Methods                                                              │
+    // └─────────────────────────────────────────────────────────────────────────────┘
+
+    /// <inheritdoc/>
+    public override ValueTask SubmitAsync<TPayload>(ILogMessage<TPayload> logMessage, CancellationToken cancellationToken)
+        => logMessageFilterPipeline.IsMatch(logMessage) ? base.SubmitAsync(logMessage, cancellationToken) : ValueTask.CompletedTask;
+
+    // ┌─────────────────────────────────────────────────────────────────────────────┐
+    // │ Internal Methods                                                            │
+    // └─────────────────────────────────────────────────────────────────────────────┘
+    internal IDisposable AddFilter<TPayload>(LogMessageFilter filter)
+         where TPayload : notnull
+        => logMessageFilterPipeline.Add(filter);
 }

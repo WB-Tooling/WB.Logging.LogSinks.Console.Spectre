@@ -1,23 +1,14 @@
-using System;
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
-using Spectre.Console;
 using WB.Logging.LogSinks.Base;
 
 namespace WB.Logging.LogSinks.Console.Spectre;
 
-internal sealed class PayloadLogMessageWriter : IAsyncLogMessageWriter<WidgetPayload, IAnsiConsole>
+internal sealed class WidgetPayloadLogMessageWriter(SpectreConsoleLogSink logSink) : IAsyncLogMessageWriter<WidgetPayload>
 {
-    public IAnsiConsole Writer { get; set; } = AnsiConsole.Console;
-
-    public IAsyncLogSink? LogSink { get; set; }
-
-    public ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, WidgetPayload? payload)
+    public ValueTask WriteAsync(ILogMessage<WidgetPayload> logMessage, CancellationToken cancellationToken)
     {
-        if (payload is not null)
-        {
-            Writer.Write(payload.Widget);
-        }
+        logSink.Console.Write(logMessage.Payload.Widget);
 
         return ValueTask.CompletedTask;
     }

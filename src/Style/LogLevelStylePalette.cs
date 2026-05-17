@@ -6,6 +6,7 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// The <see cref="LogLevelStylePalette"/> record defines a set of styles for rendering 
 /// different log levels in the console using Spectre.Console.
 /// </summary>
+/// <param name="DebugTextStyle"></param>
 /// <param name="InfoTextStyle"></param>
 /// <param name="WarningTextStyle"></param>
 /// <param name="ErrorTextStyle"></param>
@@ -13,6 +14,7 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// <param name="NoneTextStyle"></param>
 /// <param name="BracketStyle"></param>
 public readonly record struct LogLevelStylePalette(
+    Style DebugTextStyle,
     Style InfoTextStyle,
     Style WarningTextStyle,
     Style ErrorTextStyle,
@@ -28,6 +30,7 @@ public readonly record struct LogLevelStylePalette(
     /// Gets the default <see cref="LogLevelStylePalette"/> with predefined styles.
     /// </summary>
     public static LogLevelStylePalette Default { get; } = new LogLevelStylePalette(
+        DebugTextStyle: new Style(foreground: Color.Gray),
         InfoTextStyle: new Style(foreground: Color.Green),
         WarningTextStyle: new Style(foreground: Color.Yellow),
         ErrorTextStyle: new Style(foreground: Color.Red),
