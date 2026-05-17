@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 using Spectre.Console;
 using WB.Logging.LogSinks.Base;
@@ -12,8 +13,8 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// render status updates in the console.
 /// </summary>
 internal sealed class StatusConsoleMessageWriter
-    : IAsyncLogMessageWriter<SpectreConsoleLogSink, StatusStartPayload>
-    , IAsyncLogMessageWriter<SpectreConsoleLogSink, StatusFinishedPayload>
+    : IAsyncLogMessageWriter<StatusStartPayload>
+    , IAsyncLogMessageWriter<StatusFinishedPayload>
 {
     private IDisposable? logSinkDisabledSubscription;
 
@@ -32,26 +33,26 @@ internal sealed class StatusConsoleMessageWriter
     // │ Public Methods                                                              │
     // └─────────────────────────────────────────────────────────────────────────────┘
 
-    public ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, StatusStartPayload payload)
+    public ValueTask WriteAsync(ILogMessage<StatusStartPayload> logMessage, CancellationToken cancellationToken)
     {
         if (logSinkDisabledSubscription is null && LogSink is not null)
         {
             logSinkDisabledSubscription = LogSink.AddFilter<object>(lm => lm.Payload is StatusFinishedPayload);
 
-            payload.SetStatus(LogSink.Console.Status());
+            logMessage.Payload.SetStatus(LogSink.Console.Status());
         }
 
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, StatusFinishedPayload payload)
+    public ValueTask WriteAsync(ILogMessage<StatusFinishedPayload> logMessage, CancellationToken cancellationToken)
     {
         if (logSinkDisabledSubscription is not null)
         {
             logSinkDisabledSubscription.Dispose();
             logSinkDisabledSubscription = null;
 
-            payload.SetFinished();
+            logMessage.Payload.SetFinished();
         }
 
         return ValueTask.CompletedTask;

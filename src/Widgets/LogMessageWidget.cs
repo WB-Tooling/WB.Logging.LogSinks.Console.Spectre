@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Spectre.Console;
 using Spectre.Console.Rendering;
 
 namespace WB.Logging.LogSinks.Console.Spectre;
@@ -10,6 +13,10 @@ internal sealed class LogMessageWidget : IRenderable
     // │ Private Fields                                                              │
     // └─────────────────────────────────────────────────────────────────────────────┘
     private static readonly Segment spaceSegment = new(" ");
+
+    private static readonly Segment newLineSegment = new("   ↪ ", new Style(foreground: Color.Grey));
+
+    private static readonly int newLineSegmentLength = newLineSegment.CellCount();
 
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Public Properties                                                           │
@@ -28,7 +35,7 @@ internal sealed class LogMessageWidget : IRenderable
 
     public Measurement Measure(RenderOptions options, int maxWidth)
     {
-        throw new global::System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     public IEnumerable<Segment> Render(RenderOptions options, int maxWidth)
@@ -42,9 +49,12 @@ internal sealed class LogMessageWidget : IRenderable
             offset += segment.CellCount();
         }
 
-        yield return spaceSegment;
+        if (offset > 0 && LogLevel is not null && LogLevel.Any())
+        {
+            yield return spaceSegment;
 
-        offset += spaceSegment.CellCount();
+            offset += spaceSegment.CellCount();
+        }
 
         foreach (Segment segment in Render(LogLevel, options, maxWidth - offset))
         {
@@ -53,9 +63,12 @@ internal sealed class LogMessageWidget : IRenderable
             offset += segment.CellCount();
         }
 
-        yield return spaceSegment;
+        if (offset > 0 && Senders is not null && Senders.Any())
+        {
+            yield return spaceSegment;
 
-        offset += spaceSegment.CellCount();
+            offset += spaceSegment.CellCount();
+        }
 
         foreach (Segment segment in Render(Senders, options, maxWidth - offset))
         {
@@ -64,61 +77,55 @@ internal sealed class LogMessageWidget : IRenderable
             offset += segment.CellCount();
         }
 
-        yield return spaceSegment;
+        if (offset > 0 && Payload is not null && Payload.Any())
+        {
+            yield return spaceSegment;
 
-        offset += spaceSegment.CellCount();
+            offset += spaceSegment.CellCount();
+        }
 
         int remainingWidth = maxWidth - offset;
 
-        if (remainingWidth < 10)
+        Segment[] payloadSegments = Payload?.SelectMany(renderable => renderable.Render(options, int.MaxValue))?.ToArray() ?? [];
+
+        int i = 0;
+
+        for (i = 0; i < payloadSegments.Length; i++)
         {
-            yield return Segment.LineBreak;
+            Segment segment = payloadSegments[i];
 
-            offset = 0;
-        }
-
-        foreach (IRenderable renderable in Payload ?? [])
-        {
-            Segment[] segments = [.. renderable.Render(options, maxWidth - offset)];
-
-            if (remainingWidth < 10)
+            if (segment.CellCount() < remainingWidth)
             {
-                yield return Segment.Empty;
+                yield return segment;
 
-                if (segments.Length > 0)
-                {
-                    yield return segments[0];
-                }
-
-                if (segments.Length > 1)
-                {
-                    Segment padding = new(new string(' ', offset));
-
-                    for (int i = 1; i < segments.Length; i++)
-                    {
-                        yield return padding;
-                        yield return segments[i];
-                    }
-                }
+                offset += segment.CellCount();
+                remainingWidth = maxWidth - offset;
             }
             else
             {
-                if (segments.Length > 0)
-                {
-                    yield return segments[0];
-                }
-
-                if (segments.Length > 1)
-                {
-                    Segment padding = new(new string(' ', offset));
-
-                    for (int i = 1; i < segments.Length; i++)
-                    {
-                        yield return padding;
-                        yield return segments[i];
-                    }
-                }
+                break;
             }
+        }
+
+        int lineWidth = maxWidth - newLineSegmentLength;
+        bool newLine = offset > 0;
+
+        List<SegmentLine> segmentLines = Segment.SplitLines(payloadSegments[i..], lineWidth);
+
+        foreach (SegmentLine segmentLine in segmentLines)
+        {
+            if (newLine)
+            {
+                yield return Segment.LineBreak;
+                yield return newLineSegment;
+            }
+
+            foreach (Segment lineSegment in segmentLine)
+            {
+                yield return lineSegment;
+            }
+
+            newLine = true;
         }
     }
 

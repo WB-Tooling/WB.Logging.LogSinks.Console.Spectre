@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Spectre.Console;
 using Spectre.Console.Rendering;
@@ -16,12 +16,16 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// to render these parts. Derived classes can override the rendering methods to customize the appearance of log messages.
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
-public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<SpectreConsoleLogSink, TValue>
+public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<TValue>
     where TValue : notnull
 {
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Private Fields                                                              │
     // └─────────────────────────────────────────────────────────────────────────────┘
+    private readonly SpectreConsoleLogSink logSink;
+
+    private readonly BadgeWidget debugBadge;
+
     private readonly BadgeWidget infoBadge;
 
     private readonly BadgeWidget warningBadge;
@@ -39,12 +43,20 @@ public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<Spe
     // └─────────────────────────────────────────────────────────────────────────────┘
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SpectreConsoleLogMessageWriter{TValue}"/> class with default styles for log levels. The constructor creates badge widgets for different log levels (info, warning, error, unknown) 
+    /// Initializes a new instance of the <see cref="SpectreConsoleLogMessageWriter{TValue}"/> class with default styles for log levels. The constructor creates badge widgets for different log levels (debug, info, warning, error, none, unknown) 
     /// using the styles defined in the <see cref="StylePalette"/>. These badges are used to render the log level 
     /// part of log messages when the <see cref="ShowLogLevel"/> property is set to <c>true</c>.
     /// </summary>
-    public SpectreConsoleLogMessageWriter()
+    public SpectreConsoleLogMessageWriter(SpectreConsoleLogSink logSink)
     {
+        this.logSink = logSink ?? throw new ArgumentNullException(nameof(logSink));
+
+        debugBadge = new BadgeWidget("DEBU")
+        {
+            BracketStyle = StylePalette.LogLevelStyle.BracketStyle,
+            TextStyle = StylePalette.LogLevelStyle.DebugTextStyle,
+        };
+
         infoBadge = new BadgeWidget("INFO")
         {
             BracketStyle = StylePalette.LogLevelStyle.BracketStyle,
@@ -80,29 +92,6 @@ public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<Spe
     // │ Public Properties                                                           │
     // └─────────────────────────────────────────────────────────────────────────────┘
 
-    // ┌─────────────────────────────────────────────────────────────────────────────┐
-    // │ Public Methods                                                              │
-    // └─────────────────────────────────────────────────────────────────────────────┘
-
-    /// <inheritdoc/>
-    public virtual ValueTask WriteAsync(DateTimeOffset timestamp, LogLevel? logLevel, IEnumerable<string> senders, TValue payload)
-    {
-        logMessageWidget.Reset();
-
-        logMessageWidget.Timestamp = ShowTimestamp ? RenderTimestamp(timestamp) : null;
-        logMessageWidget.LogLevel = ShowLogLevel ? RenderLogLevel(logLevel) : null;
-        logMessageWidget.Senders = ShowSenders ? RenderSenders(senders) : null;
-        logMessageWidget.Payload = ShowPayload ? RenderPayload(payload) : null;
-
-        LogSink?.Console.Write(logMessageWidget);
-
-        return ValueTask.CompletedTask;
-    }
-
-    // ┌─────────────────────────────────────────────────────────────────────────────┐
-    // │ Public Properties                                                           │
-    // └─────────────────────────────────────────────────────────────────────────────┘
-
     /// <summary>
     /// Gets or sets the <see cref="StylePalette"/> used to style different parts of log messages.
     /// </summary>
@@ -128,9 +117,26 @@ public class SpectreConsoleLogMessageWriter<TValue> : IAsyncLogMessageWriter<Spe
     /// </summary>
     public bool ShowPayload { get; set; } = true;
 
+    // ┌─────────────────────────────────────────────────────────────────────────────┐
+    // │ Public Methods                                                              │
+    // └─────────────────────────────────────────────────────────────────────────────┘
+
     /// <inheritdoc/>
-    [NotNull]
-    public SpectreConsoleLogSink? LogSink { get; set; }
+    public virtual ValueTask WriteAsync(ILogMessage<TValue> logMessage, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(logMessage);
+
+        logMessageWidget.Reset();
+
+        logMessageWidget.Timestamp = ShowTimestamp ? RenderTimestamp(logMessage.Timestamp) : null;
+        logMessageWidget.LogLevel = ShowLogLevel ? RenderLogLevel(logMessage.LogLevel) : null;
+        logMessageWidget.Senders = ShowSenders && logMessage.Senders.Count > 0 ? RenderSenders(logMessage.Senders) : null;
+        logMessageWidget.Payload = ShowPayload ? RenderPayload(logMessage.Payload) : null;
+
+        logSink.Console.Write(logMessageWidget);
+
+        return ValueTask.CompletedTask;
+    }
 
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Protected Methods                                                           │

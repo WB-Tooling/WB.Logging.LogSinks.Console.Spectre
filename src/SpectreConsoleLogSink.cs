@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 using Spectre.Console;
 using WB.Logging.LogSinks.Base;
@@ -12,11 +14,10 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// </summary>
 public sealed class SpectreConsoleLogSink : AsyncLogSinkBase<SpectreConsoleLogSink>
 {
-    private readonly ProgressConsoleMessageWriter progressConsoleMessageWriter = new();
-
-    private readonly StatusConsoleMessageWriter statusConsoleMessageWriter = new();
-
-    private readonly LogMessageFilterRegistry logMessageFilterRegistry = new();
+    // ┌─────────────────────────────────────────────────────────────────────────────┐
+    // │ Private Fields                                                              │
+    // └─────────────────────────────────────────────────────────────────────────────┘
+    private readonly LogMessageFilterPipeline logMessageFilterPipeline = new();
 
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Public Constructors                                                         │
@@ -25,19 +26,23 @@ public sealed class SpectreConsoleLogSink : AsyncLogSinkBase<SpectreConsoleLogSi
     /// <summary>
     /// Initializes a new instance of the <see cref="SpectreConsoleLogSink"/> class.
     /// </summary>
-    public SpectreConsoleLogSink() : base(new SpectreConsoleLogMessageWriter<object>())
+    [SetsRequiredMembers]
+    public SpectreConsoleLogSink() : base()
     {
-        RegisterLogMessageWriter(new PayloadLogMessageWriter());
-        RegisterLogMessageWriter<ProgressStartPayload>(progressConsoleMessageWriter);
-        RegisterLogMessageWriter<ProgressFinishedPayload>(progressConsoleMessageWriter);
-        RegisterLogMessageWriter<StatusStartPayload>(statusConsoleMessageWriter);
-        RegisterLogMessageWriter<StatusFinishedPayload>(statusConsoleMessageWriter);
+        DefaultLogMessageWriter = new SpectreConsoleLogMessageWriter<object>(this);
+
+        RegisterLogMessageWriter<WidgetPayloadLogMessageWriter>();
+        RegisterLogMessageWriter<ProgressConsoleMessageWriter>();
+        RegisterLogMessageWriter<StatusConsoleMessageWriter>();
+        RegisterLogMessageWriter<WidgetPayloadLogMessageWriter>();
+
+        ServiceContainer.RegisterInstance(this);
+        ServiceContainer.RegisterInstance(Console);
     }
 
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Internal Properties                                                         │
     // └─────────────────────────────────────────────────────────────────────────────┘
-
     internal IAnsiConsole Console { get; set; } = AnsiConsole.Console;
 
     // ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -45,27 +50,13 @@ public sealed class SpectreConsoleLogSink : AsyncLogSinkBase<SpectreConsoleLogSi
     // └─────────────────────────────────────────────────────────────────────────────┘
 
     /// <inheritdoc/>
-    public sealed override ValueTask SubmitAsync<TPayload>(ILogMessage<TPayload> logMessage)
-    {
-        if (!logMessageFilterRegistry.IsMatch(logMessage))
-        {
-            return ValueTask.CompletedTask;
-        }
-        else
-        {
-            return base.SubmitAsync(logMessage);
-        }
-    }
+    public override ValueTask SubmitAsync<TPayload>(ILogMessage<TPayload> logMessage, CancellationToken cancellationToken)
+        => logMessageFilterPipeline.IsMatch(logMessage) ? base.SubmitAsync(logMessage, cancellationToken) : ValueTask.CompletedTask;
 
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Internal Methods                                                            │
     // └─────────────────────────────────────────────────────────────────────────────┘
-
-    internal IDisposable AddFilter<TPayload>(LogMessageFilter<TPayload> filter)
+    internal IDisposable AddFilter<TPayload>(LogMessageFilter filter)
          where TPayload : notnull
-    {
-        ArgumentNullException.ThrowIfNull(filter);
-
-        return logMessageFilterRegistry.RegisterLogMessageFilter(filter);
-    }
+        => logMessageFilterPipeline.Add(filter);
 }

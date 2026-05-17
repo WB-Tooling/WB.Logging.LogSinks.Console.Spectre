@@ -21,7 +21,7 @@ public static class ILoggerExtensions
     /// <param name="this">The <see cref="ILogger"/> instance to attach the log sink to.</param>
     /// <param name="configure">An optional action to configure the <see cref="SpectreConsoleLogSink"/> after it has been created and attached.</param>
     /// <returns>An <see cref="IDisposable"/> that can be used to detach the log sink from the logger when it is no longer needed.</returns>
-    public static IDisposable AttachSpectreConsole(this ILogger @this, Action<SpectreConsoleLogSink>? configure = null)
+    public static IAsyncDisposable AttachSpectreConsole(this ILogger @this, Action<SpectreConsoleLogSink>? configure = null)
     {
         ArgumentNullException.ThrowIfNull(@this);
 
@@ -31,7 +31,11 @@ public static class ILoggerExtensions
 
         configure?.Invoke(logSink);
 
-        return disposable;
+        return new ActionDisposable(async () =>
+        {
+            disposable.Dispose();
+            await logSink.DisposeAsync().ConfigureAwait(false);
+        });
     }
 
     /// <summary>
