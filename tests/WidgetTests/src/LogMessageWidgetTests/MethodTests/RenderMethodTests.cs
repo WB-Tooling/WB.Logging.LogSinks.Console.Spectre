@@ -56,7 +56,7 @@ public sealed class TheRenderMethod
     public async Task ShouldRenderTheLogMessageWidget(TestData testData)
     {
         // Arrange
-        TestConsole testConsole = new()
+        using TestConsole testConsole = new()
         {
             EmitAnsiSequences = true,
         };
