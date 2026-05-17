@@ -18,8 +18,8 @@
     <Authors>Wolf Bublitz</Authors>
     <Description>A console log sink using Spectre.Console.</Description>
     <PackageTags>WB.Logging, LogSinks, Console</PackageTags>
-    <PackageProjectUrl>https://github.com/WolfBublitz/WB.Logging.LogSinks.Console.Spectre</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/WolfBublitz/WB.Logging.LogSinks.Console.Spectre</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/WB-Tooling/WB.Logging.LogSinks.Console.Spectre</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/WB-Tooling/WB.Logging.LogSinks.Console.Spectre</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
