@@ -63,7 +63,7 @@ public sealed class TheRenderMethod
 
         LogMessageWidget logMessageWidget = new()
         {
-            Timestamp = testData.Timestamp is null ? [] : [testData.Timestamp.ToString().ToMarkup()],
+            Timestamp = testData.Timestamp is null ? [] : [testData.Timestamp.Value.ToString("yyyy-MM-dd HH:mm:ss.fff zzz").ToMarkup()],
             LogLevel = testData.LogLevel is null ? [] : [testData.LogLevel.ToString().ToMarkup()],
             Senders = testData.Senders is null ? [] : [string.Join(", ", testData.Senders).ToMarkup()],
             Payload = testData.Payload is null ? [] : [testData.Payload.ToString().ToMarkup()]
