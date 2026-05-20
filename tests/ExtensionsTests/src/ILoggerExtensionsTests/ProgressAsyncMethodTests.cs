@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using AwesomeAssertions;
 using Spectre.Console;
@@ -10,7 +11,7 @@ namespace ExtensionsTests.ILoggerExtensionsTests.ProgressAsyncMethodTests;
 public sealed class TheProgressAsyncMethod
 {
     [Test]
-    public async Task ShouldRunAProgress()
+    public async Task ShouldRunAProgress2(CancellationToken cancellationToken)
     {
         // Arrange
         TestConsole testConsole = new();
@@ -21,20 +22,17 @@ public sealed class TheProgressAsyncMethod
         });
 
         // Act
-        await logger.ProgressAsync(async progress =>
+        await logger.ProgressAsync(async context =>
         {
-            await progress.StartAsync(async context =>
-            {
-                ProgressTask task = context.AddTask("Processing...").MaxValue(100);
+            ProgressTask task = context.AddTask("Processing...").MaxValue(100);
 
-                for (int i = 0; i < 100; i++)
-                {
-                    task.Increment(1);
-                    await Task.Delay(10);
-                }
-            }).ConfigureAwait(false);
-        });
-        await logger.FlushAsync();
+            for (int i = 0; i < 100; i++)
+            {
+                task.Increment(1);
+                await Task.Delay(10, cancellationToken);
+            }
+        }, cancellationToken).ConfigureAwait(false);
+        await logger.FlushAsync(cancellationToken);
 
         // Assert
         testConsole.Output.Should().Contain("Processing...");

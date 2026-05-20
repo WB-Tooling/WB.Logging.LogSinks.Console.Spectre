@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Spectre.Console;
+
 using WB.Logging.LogSinks.Base;
 
 namespace WB.Logging.LogSinks.Console.Spectre;
@@ -36,8 +37,8 @@ public sealed class SpectreConsoleLogSink : AsyncLogSinkBase<SpectreConsoleLogSi
         RegisterLogMessageWriter<StatusConsoleMessageWriter>();
         RegisterLogMessageWriter<WidgetPayloadLogMessageWriter>();
 
-        ServiceContainer.RegisterInstance(this);
-        ServiceContainer.RegisterInstance(Console);
+        ServiceContainer.RegisterInstance(this, disposeWithContainer: false);
+        ServiceContainer.RegisterInstance(Console, disposeWithContainer: false);
     }
 
     // ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -56,7 +57,6 @@ public sealed class SpectreConsoleLogSink : AsyncLogSinkBase<SpectreConsoleLogSi
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Internal Methods                                                            │
     // └─────────────────────────────────────────────────────────────────────────────┘
-    internal IDisposable AddFilter<TPayload>(LogMessageFilter filter)
-         where TPayload : notnull
+    internal IDisposable AddFilter(LogMessageFilter filter)
         => logMessageFilterPipeline.Add(filter);
 }

@@ -21,17 +21,14 @@ public sealed class TheStatusAsyncMethod
         });
 
         // Act
-        await logger.StatusAsync(async status =>
+        await logger.StatusAsync("status", async context =>
         {
-            await status.StartAsync("status", async context =>
+            for (int i = 0; i < 100; i++)
             {
-                for (int i = 0; i < 100; i++)
-                {
-                    context.Status($"Processing... {i}%");
-                    await Task.Delay(10);
-                }
-            }).ConfigureAwait(false);
-        });
+                context.Status($"Processing... {i}%");
+                await Task.Delay(10);
+            }
+        }).ConfigureAwait(false);
         await logger.FlushAsync();
 
         // Assert

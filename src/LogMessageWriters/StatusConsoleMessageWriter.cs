@@ -12,49 +12,17 @@ namespace WB.Logging.LogSinks.Console.Spectre;
 /// A log message writer that uses Spectre.Console's status to 
 /// render status updates in the console.
 /// </summary>
-internal sealed class StatusConsoleMessageWriter
-    : IAsyncLogMessageWriter<StatusStartPayload>
-    , IAsyncLogMessageWriter<StatusFinishedPayload>
+internal sealed class StatusConsoleMessageWriter(SpectreConsoleLogSink logSink)
+    : IAsyncLogMessageWriter<StatusPayload>
 {
-    private IDisposable? logSinkDisabledSubscription;
-
-    // ┌─────────────────────────────────────────────────────────────────────────────┐
-    // │ Public Properties                                                           │
-    // └─────────────────────────────────────────────────────────────────────────────┘
-
-    /// <inheritdoc/>
-    public IAnsiConsole Writer { get; set; } = AnsiConsole.Console;
-
-    /// <inheritdoc/>
-    [NotNull]
-    public SpectreConsoleLogSink? LogSink { get; set; }
-
     // ┌─────────────────────────────────────────────────────────────────────────────┐
     // │ Public Methods                                                              │
     // └─────────────────────────────────────────────────────────────────────────────┘
 
-    public ValueTask WriteAsync(ILogMessage<StatusStartPayload> logMessage, CancellationToken cancellationToken)
+    public async ValueTask WriteAsync(ILogMessage<StatusPayload> logMessage, CancellationToken cancellationToken)
     {
-        if (logSinkDisabledSubscription is null && LogSink is not null)
-        {
-            logSinkDisabledSubscription = LogSink.AddFilter<object>(lm => lm.Payload is StatusFinishedPayload);
+        using IDisposable filter = logSink.Disable();
 
-            logMessage.Payload.SetStatus(LogSink.Console.Status());
-        }
-
-        return ValueTask.CompletedTask;
-    }
-
-    public ValueTask WriteAsync(ILogMessage<StatusFinishedPayload> logMessage, CancellationToken cancellationToken)
-    {
-        if (logSinkDisabledSubscription is not null)
-        {
-            logSinkDisabledSubscription.Dispose();
-            logSinkDisabledSubscription = null;
-
-            logMessage.Payload.SetFinished();
-        }
-
-        return ValueTask.CompletedTask;
+        await logMessage.Payload.ExecuteAsync(logSink.Console).ConfigureAwait(false);
     }
 }

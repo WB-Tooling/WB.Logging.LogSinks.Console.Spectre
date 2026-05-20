@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Spectre.Console;
@@ -82,43 +83,46 @@ public static class ILoggerExtensions
     /// Logs a <see cref="Progress"/> to the console.
     /// </summary>
     /// <param name="this">The <see cref="ILogger"/> instance to log the progress to.</param>
-    /// <param name="action">An action that receives the <see cref="Progress"/> instance to configure it and add tasks to it.</param>
+    /// <param name="action">An action that receives the <see cref="ProgressContext"/> instance to configure it and add tasks to it.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the progress operation.</param>
     /// <returns>A <see cref="Task"/> that represents the asynchronous progress operation.</returns>
-    public static async Task ProgressAsync(this ILogger @this, Func<Progress, Task> action, CancellationToken cancellationToken = default)
+    public static Task ProgressAsync(this ILogger @this, Func<ProgressContext, Task> action, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(@this);
-        ArgumentNullException.ThrowIfNull(action);
 
-        ProgressStartPayload startPayload = new()
+        TaskCompletionSource taskCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        ProgressPayload payload = new()
         {
-            CancellationToken = cancellationToken,
+            ExecuteAsync = async console =>
+            {
+                try
+                {
+                    await console.Progress().StartAsync(action).ConfigureAwait(false);
+
+                    taskCompletionSource.SetResult();
+                }
+                catch (Exception exception)
+                {
+                    taskCompletionSource.SetException(exception);
+                }
+            },
         };
 
-        @this.Log(null, startPayload);
+        @this.Log(null, payload);
 
-        Progress progress = await startPayload.WaitForProgressAsync().ConfigureAwait(false);
-
-        await action(progress).ConfigureAwait(false);
-
-        ProgressFinishedPayload finishedPayload = new()
-        {
-            CancellationToken = cancellationToken,
-        };
-
-        @this.Log(null, finishedPayload);
-
-        await finishedPayload.WaitForFinishedAsync().ConfigureAwait(false);
+        return taskCompletionSource.Task;
     }
 
     /// <summary>
     /// Logs a <see cref="Status"/> to the console.
     /// </summary>
     /// <param name="this">The <see cref="ILogger"/> instance to log the status to.</param>
+    /// <param name="status">The status text to display.</param>
     /// <param name="action">An action that receives the <see cref="Status"/> instance to configure it and add tasks to it.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the status operation.</param>
     /// <returns>A <see cref="Task"/> that represents the asynchronous status operation.</returns>
-    public static async Task StatusAsync(this ILogger @this, Func<Status, Task> action, CancellationToken cancellationToken = default)
+    public static Task StatusAsync(this ILogger @this, string status, Func<StatusContext, Task> action, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(@this);
         ArgumentNullException.ThrowIfNull(action);
@@ -128,19 +132,88 @@ public static class ILoggerExtensions
             CancellationToken = cancellationToken,
         };
 
-        @this.Log(null, startPayload);
+        TaskCompletionSource taskCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        Status status = await startPayload.WaitForStatusAsync().ConfigureAwait(false);
-
-        await action(status).ConfigureAwait(false);
-
-        StatusFinishedPayload finishedPayload = new()
+        StatusPayload statusPayload = new()
         {
-            CancellationToken = cancellationToken,
+            ExecuteAsync = async console =>
+            {
+                try
+                {
+                    await console.Status().StartAsync(status, action).ConfigureAwait(false);
+
+                    taskCompletionSource.SetResult();
+                }
+                catch (Exception exception)
+                {
+                    taskCompletionSource.SetException(exception);
+                }
+            },
         };
 
-        @this.Log(null, finishedPayload);
+        @this.Log(null, statusPayload);
 
-        await finishedPayload.WaitForFinishedAsync().ConfigureAwait(false);
+        return taskCompletionSource.Task;
+    }
+
+    [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We want to catch all exceptions to set them on the payload.")]
+    public static Task<bool> ConfirmAsync(this ILogger @this, string prompt, bool defaultValue = true, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(@this);
+        ArgumentNullException.ThrowIfNull(prompt);
+
+        TaskCompletionSource<bool> taskCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        ConfirmPayload payload = new()
+        {
+            ExecuteAsync = async console =>
+            {
+                try
+                {
+                    bool result = await console.ConfirmAsync(prompt, defaultValue, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                    taskCompletionSource.SetResult(result);
+                }
+                catch (Exception exception)
+                {
+                    taskCompletionSource.SetException(exception);
+                }
+            },
+        };
+
+        @this.Log(null, payload);
+
+        return taskCompletionSource.Task;
+    }
+
+    [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We want to catch all exceptions to set them on the payload.")]
+    public static Task<T> AskAsync<T>(this ILogger @this, string prompt, CancellationToken cancellationToken = default)
+        where T : notnull
+    {
+        ArgumentNullException.ThrowIfNull(@this);
+        ArgumentNullException.ThrowIfNull(prompt);
+
+        TaskCompletionSource<T> taskCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        AskPayload payload = new()
+        {
+            ExecuteAsync = async console =>
+            {
+                try
+                {
+                    T result = await console.AskAsync<T>(prompt, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                    taskCompletionSource.TrySetResult(result);
+                }
+                catch (Exception exception)
+                {
+                    taskCompletionSource.TrySetException(exception);
+                }
+            },
+        };
+
+        @this.Log(null, payload);
+
+        return taskCompletionSource.Task;
     }
 }
