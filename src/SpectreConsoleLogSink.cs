@@ -32,7 +32,8 @@ public sealed class SpectreConsoleLogSink : AsyncLogSinkBase<SpectreConsoleLogSi
     {
         DefaultLogMessageWriter = new SpectreConsoleLogMessageWriter<object>(this);
 
-        RegisterLogMessageWriter<WidgetPayloadLogMessageWriter>();
+        RegisterLogMessageWriter<AskConsoleMessageWriter>();
+        RegisterLogMessageWriter<ConfirmConsoleMessageWriter>();
         RegisterLogMessageWriter<ProgressConsoleMessageWriter>();
         RegisterLogMessageWriter<StatusConsoleMessageWriter>();
         RegisterLogMessageWriter<WidgetPayloadLogMessageWriter>();
